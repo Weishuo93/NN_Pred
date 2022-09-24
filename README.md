@@ -11,7 +11,7 @@ The following features might be useful to you:
 - Basic APIs in C++ and Fortran
 - Extensions in OpenFOAM and CFL3D to assist CFD simulation
 
-A minimal example of usage of the core predictor in C++:
+### A minimal example of usage of the core predictor in C++:
 
 ```c++
 // Load the Graph:
@@ -44,14 +44,14 @@ pd.get_node_data("your_output_name", data_out)
 ```
 
 
-# How to install
+## How to install
 The first step is to activate this folder by executing the script:
 ```sh
 source activate.sh
 ```
 This script sets the necessary environmental variables to properly compile the library. The `Predictor-Core` needs to be compiled firstly, as the `OpenFOAM-Extension` and `CFL3D-Extension` all depends on the core predictor.
 
-## Third party dependencies
+### Third party dependencies
 The `Predictor-Core` uses Tensorflow C-API, the dependencies are as follow:
 
 - [libtensorflow.so](https://www.tensorflow.org/install/lang_c)
@@ -69,7 +69,7 @@ export MY_EIGEN_HOME=your/eigen/dir
 export MY_TF_HOME=your/TF/dir/with/libtensorflow.so/
 ```
 
-## Build the Predictor-Core
+### Build the Predictor-Core
 
 ```sh
 # Go to the source file dir:
@@ -90,7 +90,7 @@ After the compilation, you might need to add the compiled libraries (located in 
 
 The installation of `OpenFOAM-Extension` and `CFL3D-Extension` please refer to the `README.md` in each separated folders.
 
-# How to cite
+## How to cite
 If this software brings convenience to you, please consider citing the following paper, reported in the bibtex entries:
 ```
 @article{
@@ -98,7 +98,7 @@ If this software brings convenience to you, please consider citing the following
 }
 ```
 
-# License
+## License
 The source files in `Predictor-Core` folder is freely available under the MIT License. 
 
 The files in `OpenFOAM-Extension` folder is published under GNU Lesser General Public License (LGPL), Version 3. The files in `CFL3D-Extension` folder is published under Apache License, Version 2.

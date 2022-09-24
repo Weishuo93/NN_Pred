@@ -3,7 +3,7 @@ Application of the **NN_Pred** in **OpenFOAM**.
 
 The folder consists of the `TF_OF_Predictor` and the tutorial cases including a `ML Laplacian Solver` and a `ML-RANS Model`. The `TF_OF_Predictor` handles the data I/O with `volScalarField` or `scalarField` data type in OpenFOAM.
 
-# Installation of OF_Predictor
+## Installation of TF_OF_Predictor
 Firstly, the `Predictor-Core` needs to be properly compiled. Then the `OpenFOAM-Extension` can be compiled. The entire folder supports the following OpenFOAM versions.
 *   [**OpenFOAM v4.x**](https://github.com/OpenFOAM/OpenFOAM-4.x) or
 *   [**OpenFOAM v5.x**](https://github.com/OpenFOAM/OpenFOAM-5.x) or
@@ -26,7 +26,7 @@ By default, the `TF_OF_Predictor` binary library can be found in `$FOAM_USER_LIB
 
 
 
-# Usage
+## Usage
 The predictor will be created by parsing the information in an OpenFOAM dictionary, within the dictionary you should specify all the needed keys with legal values to load the TF model.
 
 ```c++
@@ -74,7 +74,7 @@ pd.predict(multi_inputs, multi_outputs);
 Please see more details with the test program in *TF_OF_Predictor/test/OpenFOAM_test_AplusB.C*
 
 
-# ML-Laplacian Solver 
+## ML-Laplacian Solver 
 This solver is to integrate a ML radiation relation to a heat transfer problem. The problem is described in [this paper]() under tutorial 1. 
 
 To compile the solvers in tutorial cases, one can execute:
@@ -101,7 +101,7 @@ The Python notebook to post process the simulation results are provided as: `tut
 
 The script to train the ML model is provided, the file path is: `tutorials/heat_transfer/Cases/Training.ipynb`
 
-# ML-RANS Turbulence Model 
+## ML-RANS Turbulence Model 
 This ML turbulence model library is to achieve the methodology of the [ML-RANS framework](). The problem is described in [this paper]() under tutorial 2. 
 
 To compile the solvers in tutorial cases, one can execute:

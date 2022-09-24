@@ -6,7 +6,7 @@ The folder consists of an original cfl3d solver (with modified output field) and
 {'rho': 1, 'u': 2, 'v': 3, 'w': 4, 'p': 5, 'omega': 6, 'k': 7, 'vist': 8}
 ```
 
-# Compilation of the CFL3D solvers
+## Compilation of the CFL3D solvers
 With the compiled Fortran API of the core predictor, one can compile the solver via:
 ```sh
 cd CFL3D-Extension  # Go to the OF Extension dir
@@ -18,7 +18,7 @@ make cfl3d_seq_ml     # ML-RANS cfl3d serial version
 make cfl3d_mpi_ml     # ML-RANS cfl3d parallel version
 ```
 
-# Run the turbulent channel case:
+## Run the turbulent channel case:
 The corresponding solvers needs to be copied into the case folder to run the simulation, which can be done by the makefile scrpt:
 ```sh
 make install

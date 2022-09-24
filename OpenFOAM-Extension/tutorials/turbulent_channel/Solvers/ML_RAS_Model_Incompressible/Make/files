@@ -1,0 +1,3 @@
+kOmegaSST_nutML_incompressible.C
+
+LIB = $(FOAM_USER_LIBBIN)/libkOmegaSSTML_Incompressible

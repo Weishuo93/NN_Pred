@@ -1,0 +1,10 @@
+EXE_INC = \
+    -I$(PREDICTOR_HOME)/OpenFOAM-Extension/OF_Predictor/lib \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude
+
+EXE_LIBS = \
+    -L$(FOAM_USER_LIBBIN) \
+    -lTF_OF_Predictor \
+    -lfiniteVolume \
+    -lmeshTools

@@ -1,0 +1,7 @@
+EXE_INC = \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(PREDICTOR_HOME)/Predictor-Core/include	\
+
+LIB_LIBS = \
+    -L$(PREDICTOR_HOME)/Predictor-Core/outputs/lib	\
+    -lPredictor	

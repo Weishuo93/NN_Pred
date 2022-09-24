@@ -1,0 +1,41 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  4.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      TF_Predictor_Dict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+
+model_pb
+{
+    readFromPB                yes;
+    modelDirectory            "models/simple_graph_tf2.pb";
+    copyMethod                Eigen;           // Eigen for fast
+    layout                    ColMajor;        // ColMajor or RowMajor
+    inputs                    ("input_a" "input_b");       //Node name for inputs, use space to separate multiple inputs: (a b c d)
+    outputs                   ("result");        //Node name for outputs
+}
+
+
+model_SavedModel
+{
+    readFromPB                no;
+    modelDirectory            "models/saved_tf2_model";  // the directory you saved your model
+    tags                      "serve";          // use savedmodel-cli to check the tags for saved model
+    copyMethod                Eigen;            // Eigen for fast
+    layout                    ColMajor;         // ColMajor or RowMajor
+    inputs                    ("serving_default_input_a" "serving_default_input_b");       //Node name for inputs, use space to separate multiple inputs: (a b c d)
+    outputs                   ("PartitionedCall");              //Node name for outputs
+}
+
+// ************************************************************************* //

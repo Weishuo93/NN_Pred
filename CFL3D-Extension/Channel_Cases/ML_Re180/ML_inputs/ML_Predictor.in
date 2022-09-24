@@ -1,0 +1,10 @@
+# Whether it is from PB (0) or from SavedModel (1) format? !n_ml_options;
+0
+# This is model dir
+ML_inputs/ML_model_sp.pb
+# This is the tag string for SavedModel(1) format, will not be used if n_ml_options = 0
+serve
+# This is input node name
+Input
+# This is output node name
+Identity

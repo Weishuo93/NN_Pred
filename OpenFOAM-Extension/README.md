@@ -48,19 +48,23 @@ In OpenFOAM program where you want to use the predictor, the basic usage is:
 
 // Construct predictor
 TF_OF_Predictor pd = TF_OF_Predictor("your_predictor_dictionary", "your_model_name");
-// For example, if your dictionary is saved in constant/ folder with filename TF_Predictor_Dict, then the predictor should be construct with TF_OF_Predictor("constant/TF_Predictor_Dict", "your_model_name");
+// For example, if your dictionary is saved in constant/ folder with filename TF_Predictor_Dict, then 
+// the predictor should be construct with TF_OF_Predictor("constant/TF_Predictor_Dict", "your_model_name");
 
 // Prepare the data container:
-// The predictor can take List of pointers of scalarField or volScalarField. just pass the fields' reference to the List
+// The predictor can take List of pointers of scalarField or volScalarField. Pass the fields' reference to the List
 // For example, your model has two input nodes and three output nodes, then you need to create Foam::List object.
 Foam::List<Foam::List<scalarField*>> multi_inputs(2);  //2 input nodes
 Foam::List<Foam::List<scalarField*>> multi_outputs(3);  //3 output nodes
-// If the first input node takes tensor shape with [-1, 3], means it requires 3 features, so append the field pointer to the container:
+// If the first input node takes tensor shape with [-1, 3], means it requires 3 features, so append the field pointer
+// to the container:
 multi_inputs[0].append(feature1_field);
 multi_inputs[0].append(feature2_field);
 multi_inputs[0].append(feature3_field);
 ...
-// Attention that the memory of a field is continuously mapped in OpenFOAM, but a [-1, 3] shaped tensor mapped each row of 3 elements together, therefore layout transpose is needed in the memory, the "layout" key in the dictionary should be specified with "ColMajor".
+// Attention that the memory of a field is continuously mapped in OpenFOAM, but a [-1, 3] shaped tensor mapped each 
+// row of 3 elements together, therefore layout transpose is needed in the memory, the "layout" key in the dictionary
+// should be specified with "ColMajor".
 // The "feature1_field" shoule be constructed by before passing to the List: 
 Foam::scalarField feature1_field;
 // or

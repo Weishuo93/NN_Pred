@@ -11,10 +11,10 @@ This predictor support two types of model formats created by tensorflow.
 Both formats have examples to create tensorflow models. This script (*test/models/createmodel_AplusB.py*) provides a minimal example of how to save the model, which also automatically detect your tensorflow version to save the corresponding format.
 ```sh
 # Create *.pb format A + B model:
-python3 src/models/createmodel_AplusB.py PB
+python3 test/models/createmodel_AplusB.py PB
 
 # Create SavedModel format A + B model:
-python3 src/models/createmodel_AplusB.py SavedModel
+python3 test/models/createmodel_AplusB.py SavedModel
 ```
 
 For SavedModel format, you might need the tensorflow *saved_model_cli* tools to check the model's *input*, *output* and *tags*, the document can be found [here](https://www.tensorflow.org/guide/saved_model). 

@@ -1,6 +1,6 @@
 # NN_Pred -- An interfacing library to deploy NN models in CFD codes
 
-This library aims at running tensorflow models in C++ and Fortran program. The library is mainly designed for deploying neural networks in CFD softwares, the extensions in **OpenFOAM** and **CFL3D** might reduce the burden in 
+This library aims at running tensorflow models in C++ and Fortran program. The library is mainly designed for deploying neural networks in CFD softwares, the extensions in **OpenFOAM** and **CFL3D** might reduce the burden in integrating ML with CFD softwares.
 
 The following features might be useful to you:
 - Support loading *.pb graph saved by frozen-graph utils in TF1

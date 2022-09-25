@@ -106,7 +106,7 @@ The Python notebook to post process the simulation results are provided as: `tut
 The script to train the ML model is provided, the file path is: `tutorials/heat_transfer/Cases/Training.ipynb`
 
 ## ML-RANS Turbulence Model 
-This ML turbulence model library is to achieve the methodology of the [ML-RANS framework](). The problem is described in [this paper]() under tutorial 2. 
+This ML turbulence model library is to achieve the methodology of the [ML-RANS framework](https://www.sciencedirect.com/science/article/pii/S0142727X21000527). The problem is described in [this paper]() under tutorial 2. 
 
 To compile the solvers in tutorial cases, one can execute:
 ```sh

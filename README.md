@@ -86,7 +86,7 @@ The installation of `OpenFOAM-Extension` and `CFL3D-Extension` please refer to t
 
 ### [Build OpenFOAM-Extension](https://github.com/Weishuo93/NN_Pred/tree/master/OpenFOAM-Extension)
 
-### [Build CFL3D-Extension](https://github.com/Weishuo93/NN_Pred/tree/master/OpenFOAM-Extension)
+### [Build CFL3D-Extension](https://github.com/Weishuo93/NN_Pred/tree/master/CFL3D-Extension)
 
 ### Locally installed third-party libs
 If you want to use the locally installed libs, please modify the two environment variables set in the `activate.sh` to point at the locally installed path:

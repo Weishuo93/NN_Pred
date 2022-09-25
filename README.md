@@ -92,7 +92,7 @@ The installation of `OpenFOAM-Extension` and `CFL3D-Extension` please refer to t
 If you want to use the locally installed libs, please modify the two environment variables set in the `activate.sh` to point at the locally installed path:
 ```sh
 export MY_EIGEN_HOME=your/eigen/dir
-export MY_TF_HOME=your/TF/dir/with/libtensorflow.so/
+export MY_TF_HOME=your/TF/dir/with/libtensorflow.so
 ```
 
 ## How to cite

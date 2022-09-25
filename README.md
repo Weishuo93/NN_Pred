@@ -63,12 +63,6 @@ cd Predictor-Core/third_party
 ./DownloadThirdParty.sh
 ```
 
-If you want to use the locally installed libs, please modify the two environment variables set in the `activate.sh` to point at the locally installed path:
-```sh
-export MY_EIGEN_HOME=your/eigen/dir
-export MY_TF_HOME=your/TF/dir/with/libtensorflow.so/
-```
-
 ### Build the Predictor-Core
 
 ```sh
@@ -89,6 +83,17 @@ make runf     # fortran test program and run
 After the compilation, you might need to add the compiled libraries (located in `./Predictor-Core/outputs/lib`) in your `$LD_LIBRARY_PATH`. This operation is done by sourcing the `activate.sh` in the beginning of the tutorial.
 
 The installation of `OpenFOAM-Extension` and `CFL3D-Extension` please refer to the `README.md` in each separated folders.
+
+### [Build OpenFOAM-Extension](https://github.com/Weishuo93/NN_Pred/tree/master/OpenFOAM-Extension)
+
+### [Build CFL3D-Extension](https://github.com/Weishuo93/NN_Pred/tree/master/OpenFOAM-Extension)
+
+### Locally installed third-party libs
+If you want to use the locally installed libs, please modify the two environment variables set in the `activate.sh` to point at the locally installed path:
+```sh
+export MY_EIGEN_HOME=your/eigen/dir
+export MY_TF_HOME=your/TF/dir/with/libtensorflow.so/
+```
 
 ## How to cite
 If this software brings convenience to you, please consider citing the following paper, reported in the bibtex entries:

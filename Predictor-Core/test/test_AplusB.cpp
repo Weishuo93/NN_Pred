@@ -38,7 +38,7 @@ int main() {
     pd.run();
 
     // Get output into the target container
-    pd.get_node_data("result", vec_out, Predictor::ColumnMajor);
+    pd.get_node_data("result", vec_out, Predictor::ColumnMajor, Predictor::Simple);
 
     // Check results, expected calculation results:
     // [7.1, 7.2, 7.3, 7.4, 7.5, 7.6]

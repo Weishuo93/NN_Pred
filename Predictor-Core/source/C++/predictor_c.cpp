@@ -44,7 +44,9 @@ TF_DataType deduce_type() {
     std::cerr << "Not supported data type." << std::endl;
     return static_cast<TF_DataType>(-10);
 }
-// TODO: instantiate template function
+
+
+// instantiate template functions
 template TF_DataType deduce_type<float>();
 template TF_DataType deduce_type<double>();
 template TF_DataType deduce_type<int8_t>();
@@ -58,6 +60,7 @@ template TF_DataType deduce_type<uint64_t>();
 
 
 
+// print list
 void print_shape(std::vector<int64_t> shape) {
     if (shape.empty()) {
         std::cout << "empty shape" << std::endl;
@@ -69,13 +72,15 @@ void print_shape(std::vector<int64_t> shape) {
     }
     std::cout << shape[shape.size()-1];
     std::cout << " ]" << std::endl;
-    return;
 }
 
+
+// multiplication of each elements
 int64_t get_numelements_from_shape(std::vector<int64_t> shape) {
     if (shape.empty()) {
         return 0;
     }
+
     int64_t num_ele = 1;
     for (size_t i = 0; i < shape.size(); i++) {
         if (shape[i] <= 0) {
@@ -105,73 +110,70 @@ struct TFModel {
         : status(nullptr), session(nullptr), graph(nullptr) {};
 };
 
+
+// read all content of file into tensor buffer
 TF_Buffer* read_file(const std::string& filename) {
-    std::ifstream pbfile(filename, std::ios::binary | std::ios::ate);
-    // Error opening the pbfile
+    std::ifstream pbfile(filename, std::ios::binary);
+
     if (!pbfile.is_open()) {
         std::cerr << "Unable to open pbfile: " << filename << std::endl;
         return nullptr;
     }
-    // Cursor is at the end to get size
+
+    // get file size
+    pbfile.seekg(0, std::ios::end);
     auto size = pbfile.tellg();
-    // Move cursor to the beginning
     pbfile.seekg(0, std::ios::beg);
-    // Read
+
+    // read file content
     auto data = new char[size];
-    pbfile.seekg(0, std::ios::beg);
     pbfile.read(data, size);
-
-    // Error reading the pbfile
-    if (!pbfile) {
-        std::cerr << "Unable to read the full pbfile: " << filename << std::endl;
-        return nullptr;
-    }
-
-    // Create tensorflow buffer from read data
-    TF_Buffer* buffer = TF_NewBufferFromString(data, size);
-    // Close pbfile and remove data
     pbfile.close();
+
+    // create tensorflow buffer from read data
+    TF_Buffer* buffer = TF_NewBufferFromString(data, size);
     delete[] data;
     return buffer;
 }
 
+
+
 class PredictorImpl {
 public:
-
     int64_t                           data_count;
     std::map<std::string, NodeInfo>   input_nodes;
     std::map<std::string, NodeInfo>   output_nodes;
-    
+
     TFModel model;
 
     NodeInfo get_info_from_model(std::string name, bool& is_node_legal);
 
     std::map<int, std::string> DT_TO_STRING = {
-        {0, "DT_INVALID"},
-        {1, "DT_FLOAT"},
-        {2, "DT_DOUBLE"},
-        {3, "DT_INT32"},
-        {4, "DT_UINT8"},
-        {5, "DT_INT16"},
-        {6, "DT_INT8"},
-        {7, "DT_STRING"},
-        {8, "DT_COMPLEX64"},
-        {9, "DT_INT64"},
-        {10, "DT_BOOL"},
-        {11, "DT_QINT8"},
-        {12, "DT_QUINT8"},
-        {13, "DT_QINT32"},
-        {14, "DT_BFLOAT16"},
-        {15, "DT_QINT16"},
-        {16, "DT_QUINT16"},
-        {17, "DT_UINT16"},
-        {18, "DT_COMPLEX128"},
-        {19, "DT_HALF"},
-        {20, "DT_RESOURCE"},
-        {21, "DT_VARIANT"},
-        {22, "DT_UINT32"},
-        {23, "DT_UINT64"}};
-
+        { 0,  "DT_INVALID"    },
+        { 1,  "DT_FLOAT"      },
+        { 2,  "DT_DOUBLE"     },
+        { 3,  "DT_INT32"      },
+        { 4,  "DT_UINT8"      },
+        { 5,  "DT_INT16"      },
+        { 6,  "DT_INT8"       },
+        { 7,  "DT_STRING"     },
+        { 8,  "DT_COMPLEX64"  },
+        { 9,  "DT_INT64"      },
+        { 10, "DT_BOOL"       },
+        { 11, "DT_QINT8"      },
+        { 12, "DT_QUINT8"     },
+        { 13, "DT_QINT32"     },
+        { 14, "DT_BFLOAT16"   },
+        { 15, "DT_QINT16"     },
+        { 16, "DT_QUINT16"    },
+        { 17, "DT_UINT16"     },
+        { 18, "DT_COMPLEX128" },
+        { 19, "DT_HALF"       },
+        { 20, "DT_RESOURCE"   },
+        { 21, "DT_VARIANT"    },
+        { 22, "DT_UINT32"     },
+        { 23, "DT_UINT64"     }
+    };
 };
 
 
@@ -418,7 +420,7 @@ void Predictor::print_operations() {
 
     size_t pos = 0;
     TF_Operation* oper;
-    
+
     while ((oper = TF_GraphNextOperation(d->model.graph, &pos)) != nullptr) {
         std::cout << std::endl;
         // std::cout << "--------------------------------------" << std::endl;
@@ -481,7 +483,7 @@ void Predictor::regist_node(std::string name, Predictor::NodeType type) {
                 } else {
                     std::cout << "The node with name: [ " << name << " ] is not legal to be registered" << std::endl;
                     return;
-                } 
+                }
             } else {
                 std::cout << "Node: [ " << name << "] has already been registered." << std::endl;
                 return;
@@ -504,10 +506,9 @@ void Predictor::regist_node(std::string name, Predictor::NodeType type) {
                 return;
             }
         } break;
-        default: {
+        default:
             std::cerr << "Please specify node type: {Predictor::INPUT_NODE} or {Predictor::OUTPUT_NODE}" << std::endl;
             return;
-        } break;
     }
 }
 
@@ -529,142 +530,79 @@ template <typename T_data, typename T_tensor>
 static void set_tensor_data_row_simple(T_data* src, TF_Tensor* dst) {
     DEBUG_EXECUTE(std::cout << "set_tensor_data_row_simple" << std::endl);
     T_tensor* buff_tensor = static_cast<T_tensor*>(TF_TensorData(dst));
-    for (int i = 0; i < TF_TensorElementCount(dst); ++i) {
+    int nelems = TF_TensorElementCount(dst);
+    for (int i = 0; i < nelems; ++i) {
         buff_tensor[i] = src[i];
     }
 }
 
+/// @brief partial transpose dst[i,j,k, :] = src[:, k,j,i].T
+/// @param rank         number of dimensions
+/// @param slice_rank   number of fixed dimensions (known index)
+template <typename T, typename U>
+static void transpose_slice(int rank, int slice_rank, const int dst_shape[],
+          T* dst, const int dst_step[], int dst_offset,
+    const U* src, const int src_step[], int src_offset) {
+    int limit = dst_shape[slice_rank];
+    int dstep = dst_step[slice_rank];
+    int sstep = dst_step[slice_rank];
+
+    if (slice_rank == rank - 1) {
+        for (int i = 0; i < limit; ++i) {
+            dst[dst_offset] = src[src_offset];
+            dst_offset += dstep;
+            src_offset += sstep;
+        }
+        return;
+    }
+
+    for (int i = 0; i < limit; ++i) {
+        transpose_slice(rank, slice_rank + 1, dst_shape,
+            dst, dst_step, dst_offset,
+            src, src_step, src_offset);
+        dst_offset += dstep;
+        src_offset += sstep;
+    }
+}
+
+// multidimension transpose set
+// dst[i,j,k,...] = src[...,k,j,i]
 template <typename T_data, typename T_tensor>
 static void set_tensor_data_col_simple(T_data* src, TF_Tensor* dst) {
-    int rank = TF_NumDims(dst);
     T_tensor* buff_tensor = static_cast<T_tensor*>(TF_TensorData(dst));
-    switch (rank) {
 
-        case 1: {
-            set_tensor_data_row_simple<T_data, T_tensor>(src, dst);
-            return;
-        } break;
-
-        case 2: {
-            int jm = TF_Dim(dst, 1);
-            int im = TF_Dim(dst, 0);
-            for (int j = 0; j < jm; j++) {
-                for (int i = 0; i < im; i++) {
-                    buff_tensor[i * jm + j] = src[i + j * im];
-                }
-            }
-            return;
-        } break;
-
-        case 3: {
-            int km = TF_Dim(dst, 2);
-            int jm = TF_Dim(dst, 1);
-            int im = TF_Dim(dst, 0);
-            for (int k = 0; k < km; k++) {
-                for (int j = 0; j < jm; j++) {
-                    for (int i = 0; i < im; i++) {
-                        buff_tensor[i * jm * km + j * km + k] = src[i + j * im + k * im * jm];
-                    }
-                }
-            }
-            return;
-        } break;
-
-        case 4: {
-            int lm = TF_Dim(dst, 3);
-            int km = TF_Dim(dst, 2);
-            int jm = TF_Dim(dst, 1);
-            int im = TF_Dim(dst, 0);
-            for (int l = 0; l < lm; l++) {
-                for (int k = 0; k < km; k++) {
-                    for (int j = 0; j < jm; j++) {
-                        for (int i = 0; i < im; i++) {
-                            buff_tensor[i * jm * km * lm + 
-                                        j * km * lm + 
-                                        k * lm + 
-                                        l] 
-                                    = 
-                                    src[i +
-                                        j * im +
-                                        k * im * jm +
-                                        l * im * jm * km];
-                        }
-                    }
-                }
-            }
-            return;
-        } break;
-
-        case 5: {
-            int pm = TF_Dim(dst, 4);
-            int lm = TF_Dim(dst, 3);
-            int km = TF_Dim(dst, 2);
-            int jm = TF_Dim(dst, 1);
-            int im = TF_Dim(dst, 0);
-            for (int p = 0; p < pm; p++) {
-                for (int l = 0; l < lm; l++) {
-                    for (int k = 0; k < km; k++) {
-                        for (int j = 0; j < jm; j++) {
-                            for (int i = 0; i < im; i++) {
-                                buff_tensor[i * jm * km * lm * pm +
-                                            j * km * lm * pm +
-                                            k * lm * pm +
-                                            l * pm + 
-                                            p] 
-                                            = 
-                                        src[i +
-                                            j * im +
-                                            k * im * jm +
-                                            l * im * jm * km +
-                                            p * im * jm * km * lm];
-                            }
-                        }
-                    }
-                }
-            }
-            return;
-        } break;
-
-        case 6: {
-            int qm = TF_Dim(dst, 5);
-            int pm = TF_Dim(dst, 4);
-            int lm = TF_Dim(dst, 3);
-            int km = TF_Dim(dst, 2);
-            int jm = TF_Dim(dst, 1);
-            int im = TF_Dim(dst, 0);
-            for (int q = 0; q < qm; q++) {
-                for (int p = 0; p < pm; p++) {
-                    for (int l = 0; l < lm; l++) {
-                        for (int k = 0; k < km; k++) {
-                            for (int j = 0; j < jm; j++) {
-                                for (int i = 0; i < im; i++) {
-                                    buff_tensor[i * jm * km * lm * pm * qm +
-                                                j * km * lm * pm * qm +
-                                                k * lm * pm * qm +
-                                                l * pm * qm +
-                                                p * qm +
-                                                q]
-                                                = 
-                                            src[i +
-                                                j * im +
-                                                k * im * jm +
-                                                l * im * jm * km +
-                                                p * im * jm * km * lm +
-                                                q * im * jm * km * lm * pm];
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return;
-        } break;
-
-        default: {
-            std::cout << "Unsupported dimensions, set data failed." << std::endl;
-            return;
-        } break;
+    int rank = TF_NumDims(dst);
+    if (1 == rank) {
+        set_tensor_data_row_simple<T_data, T_tensor>(src, dst);
+        return;
     }
+
+    // get tensor shape
+    int* dst_shape = new int[rank];
+    int* src_shape = new int[rank];
+    for (int i = 0; i < rank; ++i) {
+        dst_shape[i] = TF_Dim(dst, i);
+        src_shape[rank - i - 1] = dst_shape[i];
+    }
+
+    // get step of each dimension
+    int *dst_step = new int[rank];
+    int *src_step = new int[rank];
+    dst_step[rank - 1] = 1;
+    src_step[rank - 1] = 1;
+    for (int i = rank - 2; i >= 0; --i) {
+        dst_step[i] = dst_step[i + 1] * dst_shape[i + 1];
+        src_step[i] = src_step[i + 1] * src_shape[i + 1];
+    }
+
+    transpose_slice<T_tensor, T_data>(rank, 0, dst_shape,
+        buff_tensor, dst_step, 0,
+        src,         src_step, 0);
+
+    delete[] dst_shape;
+    delete[] src_shape;
+    delete[] dst_step;
+    delete[] src_step;
 }
 
 template <typename T_data, typename T_tensor>
@@ -790,7 +728,7 @@ static void set_tensor_data_col_eigen(T_data* src, TF_Tensor* dst) {
 
 template <typename T_data>
 static void set_tensor_data_col_eigen_sametype(T_data* src, TF_Tensor* dst) {
-    DEBUG_EXECUTE(std::cout << "set_tensor_data_col_eigen_sametype" << std::endl); 
+    DEBUG_EXECUTE(std::cout << "set_tensor_data_col_eigen_sametype" << std::endl);
     int rank = TF_NumDims(dst);
     T_data* buff_tensor = static_cast<T_data*>(TF_TensorData(dst));
     switch (rank) {
@@ -819,7 +757,7 @@ static void set_tensor_data_col_eigen_sametype(T_data* src, TF_Tensor* dst) {
                                                       TF_Dim(dst, 1),
                                                       TF_Dim(dst, 0)});
             Eigen::TensorMap<Eigen::Tensor<T_data, 3, Eigen::RowMajor>> data_wrapper(src, shape_data);
-  
+
 
             Eigen::array<Eigen::Index, 3> shape_tensor({TF_Dim(dst, 0),
                                                         TF_Dim(dst, 1),
@@ -873,7 +811,7 @@ static void set_tensor_data_col_eigen_sametype(T_data* src, TF_Tensor* dst) {
         } break;
 
         case 6: {
-            Eigen::array<Eigen::Index, 6> shape_data({TF_Dim(dst, 5), 
+            Eigen::array<Eigen::Index, 6> shape_data({TF_Dim(dst, 5),
                                                       TF_Dim(dst, 4),
                                                       TF_Dim(dst, 3),
                                                       TF_Dim(dst, 2),
@@ -1623,7 +1561,7 @@ template bool Predictor::get_node_data<uint32_t>(std::string name, uint32_t* p_d
 template <typename T>
 bool Predictor::get_node_data(std::string name, T* p_data, int array_size, Predictor::DataLayout layout, Predictor::CopyMethod method) {
     auto it = d->output_nodes.find(name);
-    
+
     if (d->output_nodes.end() != d->output_nodes.find(name)) {
         DEBUG_EXECUTE(std::cout << "Detected registered node: " << name << " as output to extract data." << std::endl);
         it = d->output_nodes.find(name);
@@ -1936,12 +1874,12 @@ void Predictor::run() {
     TF_SessionRun(d->model.session, nullptr, input_ops.data(), input_tensors.data(), input_ops.size(), output_ops.data(), output_tensors.data(), output_ops.size(), nullptr, 0, nullptr, d->model.status);
 
 
-    
+
     // std::vector<std::pair<std::string, tensorflow::Tensor>> input_pairs;
     // std::vector<std::string> output_names;
     // std::vector<tensorflow::Tensor> output_tensors;
 
-    
+
 
 
 
@@ -2033,7 +1971,7 @@ NodeInfo PredictorImpl::get_info_from_model(std::string name, bool& is_node_lega
         info.shape = shape_arr;
     }
 
-    
+
 
     std::cout << "Tensor_shape:         ";
     print_shape(shape_arr);

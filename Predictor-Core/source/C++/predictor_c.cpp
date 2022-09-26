@@ -541,8 +541,8 @@ static void set_tensor_data_row_simple(T_data* src, TF_Tensor* dst) {
 /// @param slice_rank   number of fixed dimensions (known index)
 template <typename T, typename U>
 static void transpose_slice(int rank, int slice_rank, const int dst_shape[],
-          T* dst, const int dst_step[], int dst_offset,
-    const U* src, const int src_step[], int src_offset) {
+                            T* dst, const int dst_step[], int dst_offset,
+                            const U* src, const int src_step[], int src_offset) {
     int limit = dst_shape[slice_rank];
     int dstep = dst_step[slice_rank];
     int sstep = dst_step[slice_rank];

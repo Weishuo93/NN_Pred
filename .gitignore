@@ -60,3 +60,9 @@ Q8*
 Q9*
 triS2
 R_Weight_
+
+!*.F
+!*.F90
+!*.h
+!*.C
+!*.cpp

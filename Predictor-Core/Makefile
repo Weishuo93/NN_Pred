@@ -105,7 +105,7 @@ $(CXX_EXE): test/test_AplusB.cpp
 # Fortran Test Program
 # ++++++++++++++++++++
 $(F90_EXE): test/fortran_test_AplusB.f90 
-	LD_LIBRARY_PATH=$(OUTPUT_DIR)/lib:$(TF_HOME)/lib:$$LD_LIBRARY_PATH $(F90) $(F90FLAG) -I $(F90_INC)  $< -o $@  -L$(OUTPUT_DIR)/lib/ -lPredictor -lPredictor_fortran -lstdc++ 
+	LD_LIBRARY_PATH=$(OUTPUT_DIR)/lib:$(TF_HOME)/lib:$$LD_LIBRARY_PATH $(F90) $(F90FLAG) -I $(F90_INC)  $< -o $@  -L$(OUTPUT_DIR)/lib/ -lPredictor_fortran -lPredictor -lstdc++ 
 
 
 

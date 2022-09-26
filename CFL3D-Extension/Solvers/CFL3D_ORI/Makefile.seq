@@ -2,7 +2,7 @@
 # written by Weishuo Liu.
 
 
-F90 := mpif90
+F90 := gfortran
 
 
 F90FLAG := -DP3D_SINGLE -DLINUX -DINTEL -DNOREDIRECT -DDBLE_PRECSN -O3 -fargument-noalias-global -fno-align-commons -fdefault-real-8 -march=native

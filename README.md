@@ -98,8 +98,11 @@ export MY_TF_HOME=your/TF/dir/with/libtensorflow.so
 ## How to cite
 If this software brings convenience to you, please consider citing the following paper, reported in the bibtex entries:
 ```
-@article{
-
+@article{NNPred,
+    Author = {Weishuo Liu and Ziming Song and Jian Fang},
+    Title = {NNPred: A Predictor Library to Deploy Neural Networks in Computational Fluid Dynamics software},
+    Year = {2022},
+    Eprint = {arXiv:2209.12339},
 }
 ```
 

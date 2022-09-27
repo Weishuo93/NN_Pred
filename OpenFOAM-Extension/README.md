@@ -24,8 +24,6 @@ make runof   # OpenFOAM test program and run
 
 By default, the `TF_OF_Predictor` binary library can be found in `$FOAM_USER_LIBBIN` under name `libTF_OF_Predictor.so`.
 
-
-
 ## Usage
 The predictor will be created by parsing the information in an OpenFOAM dictionary, within the dictionary you should specify all the needed keys with legal values to load the TF model.
 
@@ -79,7 +77,7 @@ Please see more details with the test program in *TF_OF_Predictor/test/OpenFOAM_
 
 
 ## ML-Laplacian Solver 
-This solver is to integrate a ML radiation relation to a heat transfer problem. The problem is described in [this paper]() under tutorial 1. 
+This solver is to integrate a ML radiation relation to a heat transfer problem. The problem is described in [this paper](https://arxiv.org/abs/2209.12339) under tutorial 1. 
 
 To compile the solvers in tutorial cases, one can execute:
 ```sh
@@ -106,7 +104,7 @@ The Python notebook to post process the simulation results are provided as: `tut
 The script to train the ML model is provided, the file path is: `tutorials/heat_transfer/Cases/Training.ipynb`
 
 ## ML-RANS Turbulence Model 
-This ML turbulence model library is to achieve the methodology of the [ML-RANS framework](https://www.sciencedirect.com/science/article/pii/S0142727X21000527). The problem is described in [this paper]() under tutorial 2. 
+This ML turbulence model library is to achieve the methodology of the [ML-RANS framework](https://www.sciencedirect.com/science/article/pii/S0142727X21000527). The problem is described in [this paper](https://arxiv.org/abs/2209.12339) under tutorial 2. 
 
 To compile the solvers in tutorial cases, one can execute:
 ```sh

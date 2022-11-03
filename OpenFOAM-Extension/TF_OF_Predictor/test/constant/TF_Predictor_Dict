@@ -20,7 +20,7 @@ model_pb
 {
     readFromPB                yes;
     modelDirectory            "models/simple_graph_tf2.pb";
-    copyMethod                Eigen;           // Eigen for fast
+    copyMethod                Safe;           // Eigen for fast
     layout                    ColMajor;        // ColMajor or RowMajor
     inputs                    ("input_a" "input_b");       //Node name for inputs, use space to separate multiple inputs: (a b c d)
     outputs                   ("result");        //Node name for outputs

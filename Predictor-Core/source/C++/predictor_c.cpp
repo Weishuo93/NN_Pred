@@ -1161,137 +1161,177 @@ static void get_tensor_data_row_simple(TF_Tensor* src, T_data* dst) {
 
 template <typename T_tensor, typename T_data>
 static void get_tensor_data_col_simple(TF_Tensor* src, T_data* dst) {
-    DEBUG_EXECUTE(std::cout << "get_tensor_data_col_simple" << std::endl);
-    int rank = TF_NumDims(src);
     T_tensor* buff_tensor = static_cast<T_tensor*>(TF_TensorData(src));
-    switch (rank) {
-        case 1: {
-            get_tensor_data_row_simple<T_tensor, T_data>(src, dst);
-            return;
-        } break;
 
-        case 2: {
-            int jm = TF_Dim(src, 1);
-            int im = TF_Dim(src, 0);
-            for (int j = 0; j < jm; j++) {
-                for (int i = 0; i < im; i++) {
-                    dst[i + j * im] = buff_tensor[i * jm + j];
-                }
-            }
-            return;
-        } break;
+    int rank = TF_NumDims(src);
+    if (1 == rank) {
+        get_tensor_data_row_simple<T_tensor, T_data>(src, dst);
+        return;
+    } 
 
-        case 3: {
-            int km = TF_Dim(src, 2);
-            int jm = TF_Dim(src, 1);
-            int im = TF_Dim(src, 0);
-            for (int k = 0; k < km; k++) {
-                for (int j = 0; j < jm; j++) {
-                    for (int i = 0; i < im; i++) {
-                        dst[i + j * im + k * im * jm] = buff_tensor[i * jm * km + j * km + k];
-                    }
-                }
-            }
-            return;
-        } break;
-
-        case 4: {
-            int lm = TF_Dim(src, 3);
-            int km = TF_Dim(src, 2);
-            int jm = TF_Dim(src, 1);
-            int im = TF_Dim(src, 0);
-            for (int l = 0; l < lm; l++) {
-                for (int k = 0; k < km; k++) {
-                    for (int j = 0; j < jm; j++) {
-                        for (int i = 0; i < im; i++) {
-                                dst[i +
-                                    j * im +
-                                    k * im * jm +
-                                    l * im * jm * km]
-                                    =
-                        buff_tensor[i * jm * km * lm +
-                                    j * km * lm +
-                                    k * lm +
-                                    l];
-                        }
-                    }
-                }
-            }
-            return;
-        } break;
-
-        case 5: {
-            int pm = TF_Dim(src, 4);
-            int lm = TF_Dim(src, 3);
-            int km = TF_Dim(src, 2);
-            int jm = TF_Dim(src, 1);
-            int im = TF_Dim(src, 0);
-            for (int p = 0; p < pm; p++) {
-                for (int l = 0; l < lm; l++) {
-                    for (int k = 0; k < km; k++) {
-                        for (int j = 0; j < jm; j++) {
-                            for (int i = 0; i < im; i++) {
-                                    dst[i +
-                                        j * im +
-                                        k * im * jm +
-                                        l * im * jm * km +
-                                        p * im * jm * km * lm]
-                                        =
-                            buff_tensor[i * jm * km * lm * pm +
-                                        j * km * lm * pm +
-                                        k * lm * pm +
-                                        l * pm +
-                                        p];
-                            }
-                        }
-                    }
-                }
-            }
-            return;
-        } break;
-
-        case 6: {
-            int qm = TF_Dim(src, 5);
-            int pm = TF_Dim(src, 4);
-            int lm = TF_Dim(src, 3);
-            int km = TF_Dim(src, 2);
-            int jm = TF_Dim(src, 1);
-            int im = TF_Dim(src, 0);
-            for (int q = 0; q < qm; q++) {
-                for (int p = 0; p < pm; p++) {
-                    for (int l = 0; l < lm; l++) {
-                        for (int k = 0; k < km; k++) {
-                            for (int j = 0; j < jm; j++) {
-                                for (int i = 0; i < im; i++) {
-                                        dst[i +
-                                            j * im +
-                                            k * im * jm +
-                                            l * im * jm * km +
-                                            p * im * jm * km * lm +
-                                            q * im * jm * km * lm * pm]
-                                            =
-                                buff_tensor[i * jm * km * lm * pm * qm +
-                                            j * km * lm * pm * qm +
-                                            k * lm * pm * qm +
-                                            l * pm * qm +
-                                            p * qm +
-                                            q] ;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return;
-        } break;
-
-        default: {
-            std::cout << "Unsupported dimensions, set data failed." << std::endl;
-            return;
-        } break;
+    // get tensor shape
+    int* dst_shape = new int[rank];
+    int* src_shape = new int[rank];
+    for (int i = 0; i < rank; ++i) {
+        src_shape[i] = TF_Dim(src, i);
+        dst_shape[rank - i - 1] = src_shape[i];
     }
 
+    // get step of each dimension
+    int *dst_step = new int[rank];
+    int *src_step = new int[rank];
+    dst_step[rank - 1] = 1;
+    src_step[rank - 1] = 1;
+    for (int i = rank - 2; i >= 0; --i) {
+        dst_step[i] = dst_step[i + 1] * dst_shape[i + 1];
+        src_step[i] = src_step[i + 1] * src_shape[i + 1];
+    }
+
+    transpose_slice<T_data, T_tensor>(rank, 0, dst_shape,
+        dst,         dst_step, 0,
+        buff_tensor, src_step, 0);
+
+    delete[] dst_shape;
+    delete[] src_shape;
+    delete[] dst_step;
+    delete[] src_step;
 }
+
+
+
+// template <typename T_tensor, typename T_data>
+// static void get_tensor_data_col_simple(TF_Tensor* src, T_data* dst) {
+//     DEBUG_EXECUTE(std::cout << "get_tensor_data_col_simple" << std::endl);
+//     int rank = TF_NumDims(src);
+//     T_tensor* buff_tensor = static_cast<T_tensor*>(TF_TensorData(src));
+//     switch (rank) {
+//         case 1: {
+//             get_tensor_data_row_simple<T_tensor, T_data>(src, dst);
+//             return;
+//         } break;
+
+//         case 2: {
+//             int jm = TF_Dim(src, 1);
+//             int im = TF_Dim(src, 0);
+//             for (int j = 0; j < jm; j++) {
+//                 for (int i = 0; i < im; i++) {
+//                     dst[i + j * im] = buff_tensor[i * jm + j];
+//                 }
+//             }
+//             return;
+//         } break;
+
+//         case 3: {
+//             int km = TF_Dim(src, 2);
+//             int jm = TF_Dim(src, 1);
+//             int im = TF_Dim(src, 0);
+//             for (int k = 0; k < km; k++) {
+//                 for (int j = 0; j < jm; j++) {
+//                     for (int i = 0; i < im; i++) {
+//                         dst[i + j * im + k * im * jm] = buff_tensor[i * jm * km + j * km + k];
+//                     }
+//                 }
+//             }
+//             return;
+//         } break;
+
+//         case 4: {
+//             int lm = TF_Dim(src, 3);
+//             int km = TF_Dim(src, 2);
+//             int jm = TF_Dim(src, 1);
+//             int im = TF_Dim(src, 0);
+//             for (int l = 0; l < lm; l++) {
+//                 for (int k = 0; k < km; k++) {
+//                     for (int j = 0; j < jm; j++) {
+//                         for (int i = 0; i < im; i++) {
+//                                 dst[i +
+//                                     j * im +
+//                                     k * im * jm +
+//                                     l * im * jm * km]
+//                                     =
+//                         buff_tensor[i * jm * km * lm +
+//                                     j * km * lm +
+//                                     k * lm +
+//                                     l];
+//                         }
+//                     }
+//                 }
+//             }
+//             return;
+//         } break;
+
+//         case 5: {
+//             int pm = TF_Dim(src, 4);
+//             int lm = TF_Dim(src, 3);
+//             int km = TF_Dim(src, 2);
+//             int jm = TF_Dim(src, 1);
+//             int im = TF_Dim(src, 0);
+//             for (int p = 0; p < pm; p++) {
+//                 for (int l = 0; l < lm; l++) {
+//                     for (int k = 0; k < km; k++) {
+//                         for (int j = 0; j < jm; j++) {
+//                             for (int i = 0; i < im; i++) {
+//                                     dst[i +
+//                                         j * im +
+//                                         k * im * jm +
+//                                         l * im * jm * km +
+//                                         p * im * jm * km * lm]
+//                                         =
+//                             buff_tensor[i * jm * km * lm * pm +
+//                                         j * km * lm * pm +
+//                                         k * lm * pm +
+//                                         l * pm +
+//                                         p];
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//             return;
+//         } break;
+
+//         case 6: {
+//             int qm = TF_Dim(src, 5);
+//             int pm = TF_Dim(src, 4);
+//             int lm = TF_Dim(src, 3);
+//             int km = TF_Dim(src, 2);
+//             int jm = TF_Dim(src, 1);
+//             int im = TF_Dim(src, 0);
+//             for (int q = 0; q < qm; q++) {
+//                 for (int p = 0; p < pm; p++) {
+//                     for (int l = 0; l < lm; l++) {
+//                         for (int k = 0; k < km; k++) {
+//                             for (int j = 0; j < jm; j++) {
+//                                 for (int i = 0; i < im; i++) {
+//                                         dst[i +
+//                                             j * im +
+//                                             k * im * jm +
+//                                             l * im * jm * km +
+//                                             p * im * jm * km * lm +
+//                                             q * im * jm * km * lm * pm]
+//                                             =
+//                                 buff_tensor[i * jm * km * lm * pm * qm +
+//                                             j * km * lm * pm * qm +
+//                                             k * lm * pm * qm +
+//                                             l * pm * qm +
+//                                             p * qm +
+//                                             q] ;
+//                                 }
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//             return;
+//         } break;
+
+//         default: {
+//             std::cout << "Unsupported dimensions, set data failed." << std::endl;
+//             return;
+//         } break;
+//     }
+
+// }
 
 template <typename T_tensor, typename T_data>
 static void get_tensor_data_row_eigen(TF_Tensor* src, T_data* dst) {

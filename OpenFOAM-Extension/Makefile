@@ -1,6 +1,6 @@
 # OpenFOAM extension settings
-OF_SRC := OF_Predictor/lib
-OF_TEST := OF_Predictor/test
+OF_SRC := TF_OF_Predictor/lib
+OF_TEST := TF_OF_Predictor/test
 
 
 OF_SO  := $(FOAM_USER_LIBBIN)/libTF_OF_Predictor.so
@@ -25,7 +25,7 @@ runof: ofso oftest
 
 clean:
 	rm -rf $(FOAM_USER_LIBBIN)/libTF_OF_Predictor.so
-	rm -rf $(FOAM_USER_APPBIN)/TF_OF_testAplutB
+	rm -rf $(FOAM_USER_APPBIN)/TF_OF_testAplusB
 	wclean $(OF_SRC)
 	wclean $(OF_TEST)
 

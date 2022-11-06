@@ -545,7 +545,7 @@ static void transpose_slice(int rank, int slice_rank, const int dst_shape[],
                             const U* src, const int src_step[], int src_offset) {
     int limit = dst_shape[slice_rank];
     int dstep = dst_step[slice_rank];
-    int sstep = dst_step[slice_rank];
+    int sstep = src_step[rank - slice_rank - 1];
 
     if (slice_rank == rank - 1) {
         for (int i = 0; i < limit; ++i) {
@@ -1224,7 +1224,7 @@ static void get_tensor_data_col_simple(TF_Tensor* src, T_data* dst) {
     if (1 == rank) {
         get_tensor_data_row_simple<T_tensor, T_data>(src, dst);
         return;
-    } 
+    }
 
     // get tensor shape
     // int* dst_shape = new int[rank];

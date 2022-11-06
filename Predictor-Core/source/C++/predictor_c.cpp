@@ -565,24 +565,21 @@ static void transpose_slice(int rank, int slice_rank, const int dst_shape[],
     }
 }
 
-// multidimension transpose set
-// dst[i,j,k,...] = src[...,k,j,i]
-template <typename T_data, typename T_tensor>
-static void set_tensor_data_col_simple(T_data* src, TF_Tensor* dst) {
-    T_tensor* buff_tensor = static_cast<T_tensor*>(TF_TensorData(dst));
+template <typename T, typename U>
+static void simple_transpose(const U* src, int rank, const int dims[], T* dst) {
+    // T_tensor* buff_tensor = static_cast<T_tensor*>(TF_TensorData(dst));
 
-    int rank = TF_NumDims(dst);
-    if (1 == rank) {
-        set_tensor_data_row_simple<T_data, T_tensor>(src, dst);
-        return;
-    }
+    // int rank = TF_NumDims(dst);
+    // if (1 == rank) {
+    //     set_tensor_data_row_simple<T_data, T_tensor>(src, dst);
+    //     return;
+    // }
 
     // get tensor shape
+    const int* src_shape = dims;
     int* dst_shape = new int[rank];
-    int* src_shape = new int[rank];
     for (int i = 0; i < rank; ++i) {
-        dst_shape[i] = TF_Dim(dst, i);
-        src_shape[rank - i - 1] = dst_shape[i];
+        dst_shape[i] = src_shape[rank - i - 1];
     }
 
     // get step of each dimension
@@ -595,14 +592,74 @@ static void set_tensor_data_col_simple(T_data* src, TF_Tensor* dst) {
         src_step[i] = src_step[i + 1] * src_shape[i + 1];
     }
 
-    transpose_slice<T_tensor, T_data>(rank, 0, dst_shape,
-        buff_tensor, dst_step, 0,
-        src,         src_step, 0);
+    transpose_slice<T, U>(rank, 0, dst_shape,
+        dst, dst_step, 0,
+        src, src_step, 0);
 
     delete[] dst_shape;
-    delete[] src_shape;
     delete[] dst_step;
     delete[] src_step;
+}
+
+
+/*
+ndarray dim [d4, d3, d2, d1] = [5,6,7,8]
+slice [a, :, c, d]
+offset, step
+
+step(2) = [d3*d2*d1, d2*d1, d1, 1]
+[a,b,c,d] -- [a,b,c+1, d]
+
+flatten (row-major)
+[0,0,0,0]~[0,0,0,7]
+[0,0,1,0]~[0,0,1,7]
+
+dst = src.T (N)
+
+dst[0, :] = src[:, 0].T (N-1)
+dst[1, :] = src[:, 1].T
+dst[2, :] = src[:, 2].T
+dst[3, :] = src[:, 3].T
+
+*/
+
+// multidimension transpose set
+// dst[i,j,k,...] = src[...,k,j,i]
+template <typename T_data, typename T_tensor>
+static void set_tensor_data_col_simple(T_data* src, TF_Tensor* dst) {
+    T_tensor* buff_tensor = static_cast<T_tensor*>(TF_TensorData(dst));
+
+    int rank = TF_NumDims(dst);
+    if (1 == rank) {
+        set_tensor_data_row_simple<T_data, T_tensor>(src, dst);
+        return;
+    }
+
+    int* src_shape = new int[rank];
+    for (int i = 0; i < rank; ++i) {
+        src_shape[i] = TF_Dim(dst, rank - i - 1);
+    }
+
+    simple_transpose<T_tensor, T_data>(src, rank, src_shape, buff_tensor);
+    delete[] src_shape;
+
+    // // get step of each dimension
+    // int *dst_step = new int[rank];
+    // int *src_step = new int[rank];
+    // dst_step[rank - 1] = 1;
+    // src_step[rank - 1] = 1;
+    // for (int i = rank - 2; i >= 0; --i) {
+    //     dst_step[i] = dst_step[i + 1] * dst_shape[i + 1];
+    //     src_step[i] = src_step[i + 1] * src_shape[i + 1];
+    // }
+
+    // transpose_slice<T_tensor, T_data>(rank, 0, dst_shape,
+    //     buff_tensor, dst_step, 0,
+    //     src,         src_step, 0);
+
+    // delete[] dst_shape;
+    // delete[] dst_step;
+    // delete[] src_step;
 }
 
 template <typename T_data, typename T_tensor>
@@ -1170,31 +1227,33 @@ static void get_tensor_data_col_simple(TF_Tensor* src, T_data* dst) {
     } 
 
     // get tensor shape
-    int* dst_shape = new int[rank];
+    // int* dst_shape = new int[rank];
     int* src_shape = new int[rank];
     for (int i = 0; i < rank; ++i) {
         src_shape[i] = TF_Dim(src, i);
-        dst_shape[rank - i - 1] = src_shape[i];
     }
 
-    // get step of each dimension
-    int *dst_step = new int[rank];
-    int *src_step = new int[rank];
-    dst_step[rank - 1] = 1;
-    src_step[rank - 1] = 1;
-    for (int i = rank - 2; i >= 0; --i) {
-        dst_step[i] = dst_step[i + 1] * dst_shape[i + 1];
-        src_step[i] = src_step[i + 1] * src_shape[i + 1];
-    }
-
-    transpose_slice<T_data, T_tensor>(rank, 0, dst_shape,
-        dst,         dst_step, 0,
-        buff_tensor, src_step, 0);
-
-    delete[] dst_shape;
+    simple_transpose<T_data, T_tensor>(buff_tensor, rank, src_shape, dst);
     delete[] src_shape;
-    delete[] dst_step;
-    delete[] src_step;
+
+    // // get step of each dimension
+    // int *dst_step = new int[rank];
+    // int *src_step = new int[rank];
+    // dst_step[rank - 1] = 1;
+    // src_step[rank - 1] = 1;
+    // for (int i = rank - 2; i >= 0; --i) {
+    //     dst_step[i] = dst_step[i + 1] * dst_shape[i + 1];
+    //     src_step[i] = src_step[i + 1] * src_shape[i + 1];
+    // }
+
+    // transpose_slice<T_data, T_tensor>(rank, 0, dst_shape,
+    //     dst,         dst_step, 0,
+    //     buff_tensor, src_step, 0);
+
+    // delete[] dst_shape;
+    // delete[] src_shape;
+    // delete[] dst_step;
+    // delete[] src_step;
 }
 
 

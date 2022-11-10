@@ -181,46 +181,6 @@ public:
 
 //---------------------------------------Constructor-----------------------------------------------
 
-// Predictor::Predictor(std::string pbfile) : d(nullptr) {
-//     d = new PredictorImpl();
-//     d->data_count = -1;
-
-
-//     std::cout << "Initializing model from frozen graph (*.pb)..." << std::endl;
-//     d->model.status = TF_NewStatus();
-//     d->model.graph = TF_NewGraph();
-
-//     std::cout << "Reading Tensorflow GraphDef..." << std::endl;
-//     TF_Buffer* graph_def = read_file(pbfile);
-
-//     if (graph_def == nullptr) {
-//         std::cerr << "Failed to read pb file." << std::endl;
-//         return;
-//     }
-
-//     TF_ImportGraphDefOptions* import_opts = TF_NewImportGraphDefOptions();
-//     TF_GraphImportGraphDef(d->model.graph, graph_def, import_opts, d->model.status);
-
-//     if (TF_GetCode(d->model.status) != TF_OK) {
-//         std::cerr << TF_Message(d->model.status) << std::endl;
-//         return;
-//     }
-
-//     TF_DeleteImportGraphDefOptions(import_opts);
-//     TF_DeleteBuffer(graph_def);
-
-//     std::cout << "Creating Tensorflow Session..." << std::endl;
-//     TF_SessionOptions* sess_opts = TF_NewSessionOptions();
-//     d->model.session = TF_NewSession(d->model.graph, sess_opts, d->model.status);
-
-//     if (TF_GetCode(d->model.status) != TF_OK) {
-//         std::cerr << TF_Message(d->model.status) << std::endl;
-//         return;
-//     }
-//     TF_DeleteSessionOptions(sess_opts);
-
-// }
-
 #ifdef _CPU_SERIAL
 Predictor::Predictor(std::string pbfile) : Predictor(pbfile, 1, 1) {}
 Predictor::Predictor(std::string folder, std::string tag) : Predictor(folder, tag, 1, 1) {}
@@ -567,13 +527,6 @@ static void transpose_slice(int rank, int slice_rank, const int dst_shape[],
 
 template <typename T, typename U>
 static void simple_transpose(const U* src, int rank, const int dims[], T* dst) {
-    // T_tensor* buff_tensor = static_cast<T_tensor*>(TF_TensorData(dst));
-
-    // int rank = TF_NumDims(dst);
-    // if (1 == rank) {
-    //     set_tensor_data_row_simple<T_data, T_tensor>(src, dst);
-    //     return;
-    // }
 
     // get tensor shape
     const int* src_shape = dims;
@@ -642,24 +595,6 @@ static void set_tensor_data_col_simple(T_data* src, TF_Tensor* dst) {
 
     simple_transpose<T_tensor, T_data>(src, rank, src_shape, buff_tensor);
     delete[] src_shape;
-
-    // // get step of each dimension
-    // int *dst_step = new int[rank];
-    // int *src_step = new int[rank];
-    // dst_step[rank - 1] = 1;
-    // src_step[rank - 1] = 1;
-    // for (int i = rank - 2; i >= 0; --i) {
-    //     dst_step[i] = dst_step[i + 1] * dst_shape[i + 1];
-    //     src_step[i] = src_step[i + 1] * src_shape[i + 1];
-    // }
-
-    // transpose_slice<T_tensor, T_data>(rank, 0, dst_shape,
-    //     buff_tensor, dst_step, 0,
-    //     src,         src_step, 0);
-
-    // delete[] dst_shape;
-    // delete[] dst_step;
-    // delete[] src_step;
 }
 
 template <typename T_data, typename T_tensor>
@@ -1236,24 +1171,6 @@ static void get_tensor_data_col_simple(TF_Tensor* src, T_data* dst) {
     simple_transpose<T_data, T_tensor>(buff_tensor, rank, src_shape, dst);
     delete[] src_shape;
 
-    // // get step of each dimension
-    // int *dst_step = new int[rank];
-    // int *src_step = new int[rank];
-    // dst_step[rank - 1] = 1;
-    // src_step[rank - 1] = 1;
-    // for (int i = rank - 2; i >= 0; --i) {
-    //     dst_step[i] = dst_step[i + 1] * dst_shape[i + 1];
-    //     src_step[i] = src_step[i + 1] * src_shape[i + 1];
-    // }
-
-    // transpose_slice<T_data, T_tensor>(rank, 0, dst_shape,
-    //     dst,         dst_step, 0,
-    //     buff_tensor, src_step, 0);
-
-    // delete[] dst_shape;
-    // delete[] src_shape;
-    // delete[] dst_step;
-    // delete[] src_step;
 }
 
 
@@ -1838,26 +1755,6 @@ void Predictor::run() {
     TF_SessionRun(d->model.session, nullptr, input_ops.data(), input_tensors.data(), input_ops.size(), output_ops.data(), output_tensors.data(), output_ops.size(), nullptr, 0, nullptr, d->model.status);
 
 
-
-    // std::vector<std::pair<std::string, tensorflow::Tensor>> input_pairs;
-    // std::vector<std::string> output_names;
-    // std::vector<tensorflow::Tensor> output_tensors;
-
-
-
-
-
-    // // std::cout << "num input_pairs: " << input_pairs.size() << std::endl;
-
-    // // std::cout << "input pairs information: " << (input_pairs[0]).first << "   " << (input_pairs[0]).second.NumElements() << std::endl;
-
-    // for (auto i = d->output_nodes.begin(); i != d->output_nodes.end(); ++i) {
-    //     output_names.push_back(i->first + ":0");
-    // }
-
-    // // std::cout << "Output name: " << output_names[0] << std::endl;
-
-    // TF_CHECK_OK(d->model.session->Run(input_pairs, output_names, {}, &output_tensors));
 
     for (int i = 0; i < output_ops.size(); ++i) {
         std::string key = TF_OperationName(output_ops[i].oper);

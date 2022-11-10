@@ -838,7 +838,7 @@ nut_Dev::nut_Dev
 
 
 
-        predictor = TF_OF_Predictor();
+        // predictor = TF_OF_Predictor();
 
 
 

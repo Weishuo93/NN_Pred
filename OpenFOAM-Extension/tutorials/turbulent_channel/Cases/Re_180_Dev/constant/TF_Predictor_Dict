@@ -18,25 +18,26 @@ FoamFile
 model
 {
     readFromPB                yes;
-    modelDirectory            "graph/output_graph.pb";
-    //tags                      serve;
-    copyMethod                Eigen;           // Eigen for fast
-    layout                    ColMajor;        // ColMajor or RowMajor
-    inputs                    ("Lamda_in/Placeholder");       //Node name for inputs, use space to separate multiple inputs: (a b c d)
-    outputs                   ("layer_out/Wx_plus_b/Add");        //Node name for outputs
+    modelDirectory            "graph/Data_Grad_Model_TF2.pb";
+    tags                      "serve";       // use savedmodel-cli to check the tags for saved model
+    copyMethod                Eigen;        // Eigen for fast
+    layout                    ColMajor;    // ColMajor or RowMajor
+    inputs                    ("Input");       //Node name for inputs, use space to separate multiple inputs: (a b c d)
+    outputs                   ("Identity");              //Node name for outputs
 }
 
-/*
-model2
-{
-    readFromPB                no;
-    modelDirectory            "TF_Models/model_2in_2out_double";
-    tags                      "serve";       // use savedmodel-cli to check the tags for saved model
-    copyMethod                Safe;        // Eigen for fast
-    layout                    ColMajor;    // ColMajor or RowMajor
-    inputs                    (serving_default_dense_input);       //Node name for inputs, use space to separate multiple inputs: (a b c d)
-    outputs                   (StatefulPartitionedCall);              //Node name for outputs
-}
-*/
+
+// model
+// {
+//     readFromPB                yes;
+//     modelDirectory            "graph/output_graph.pb";
+//     //tags                      serve;
+//     copyMethod                Eigen;           // Eigen for fast
+//     layout                    ColMajor;        // ColMajor or RowMajor
+//     inputs                    ("Lamda_in/Placeholder");       //Node name for inputs, use space to separate multiple inputs: (a b c d)
+//     outputs                   ("layer_out/Wx_plus_b/Add");        //Node name for outputs
+// }
+
+
 
 // ************************************************************************* //

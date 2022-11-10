@@ -183,11 +183,11 @@ grid()
 #for strr in ['0','2000']:
 #  addToPlots(strr)
 
-addvarToPlots( '54000','nut_U',1)
-addvarToPlots( '56000', 'nut_U', 1)
-addvarToPlots( '58000', 'nut_U', 1)
-addvarToPlots( '60000', 'nut_U', 1)
-addvarToPlots( '62000', 'nut_U', 1)
+addvarToPlots( '200', 'nut_U', 1)
+addvarToPlots( '5000', 'nut_U', 1)
+#addvarToPlots( '58000', 'nut_U', 1)
+#addvarToPlots( '60000', 'nut_U', 1)
+#addvarToPlots( '62000', 'nut_U', 1)
 # #for dirStr in os.listdir("postProcessing/singleGraph/"):
 # addBetaToPlots('0')
 # addBetaToPlots('100')
@@ -200,5 +200,5 @@ addvarToPlots( '62000', 'nut_U', 1)
 # #contrastPlots("EARSM_testsimple", "5000")
 # #contrastPlots("KOMGSSTtestsimple", "140")
 legend(loc="best")
-savefig("myPlot.png")
+# savefig("myPlot.png")
 show() #Problems with ssh

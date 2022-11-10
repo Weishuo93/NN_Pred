@@ -1,0 +1,8 @@
+*.mod
+*.o
+outputs
+
+
+third_party/eigen*
+third_party/TF_libs
+third_party/libtensorflow*

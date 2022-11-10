@@ -1,22 +1,5 @@
-linux64Gcc*
-
-*.mod
-*.o
-
-lnInclude
-referece
-
-outputs
 .vscode
 
-
-
-Predictor-Core/third_party/eigen*
-Predictor-Core/third_party/TF_libs
-Predictor-Core/third_party/libtensorflow*
-
-
-[1-9]*
 
 !*.F
 !*.F90

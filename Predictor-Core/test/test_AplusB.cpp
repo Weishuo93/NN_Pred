@@ -2,12 +2,21 @@
 
 // Header files
 #include <vector>       // C++ standard header
+#include <string>       // C++ standard header
 #include "predictor.h"  // Predictor header
 
-int main() {
+
+int main(int argc, char const *argv[]) {
+
+    if (argc != 2) {
+        std::cerr << "usage: example-app <path-to-exported-script-module>\n";
+        return -1;
+    }
+
+    std::string model_path(argv[1]);
     // Load Model:
     // Predictor pd("AplusB.pb");  // Model's path or filename
-    Predictor pd("test/models/simple_graph_tf2.pb");
+    Predictor pd(model_path);
 
     // Register node:
     // Inputs:

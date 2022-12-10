@@ -27,9 +27,9 @@ class Predictor {
     explicit Predictor(std::string pbfile);
     explicit Predictor(std::string folder, std::string tag);
 
-    explicit Predictor(std::string pbfile, uint8_t intra_op_parallelism_threads, uint8_t inter_op_parallelism_threads);
-    explicit Predictor(std::string folder, std::string tag, uint8_t intra_op_parallelism_threads, uint8_t inter_op_parallelism_threads);
-
+    explicit Predictor(std::string pbfile, int intra_op_parallelism_threads, int inter_op_parallelism_threads);
+    explicit Predictor(std::string folder, std::string tag, int intra_op_parallelism_threads, int inter_op_parallelism_threads);
+// uint8_t
     virtual ~Predictor();
 
     void print_operations();
@@ -37,8 +37,8 @@ class Predictor {
 
     void regist_node(std::string name, NodeType type);
 
-    void set_data_count(int cnt);
-    int get_data_count();
+    void set_data_count(int64_t cnt);
+    int64_t get_data_count();
 
     void run();
 

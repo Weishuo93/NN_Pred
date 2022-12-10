@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include <utility>
+#include <limits>
 
 #include "tensorflow/c/c_api.h"
 
@@ -191,8 +192,17 @@ Predictor::Predictor(std::string folder, std::string tag) : Predictor(folder, ta
 
 
 
-Predictor::Predictor(std::string pbfile, uint8_t intra_op_parallelism_threads, uint8_t inter_op_parallelism_threads)
+Predictor::Predictor(std::string pbfile, int intra_op_parallelism_threads, int inter_op_parallelism_threads)
     : d(nullptr) {
+    assert((intra_op_parallelism_threads >= 0) && (inter_op_parallelism_threads >= 0));
+
+    int uint8lim =  static_cast<int>(std::numeric_limits<uint8_t>::max());
+    assert((intra_op_parallelism_threads <= uint8lim) && (inter_op_parallelism_threads <= uint8lim));
+    uint8_t intra_threads = static_cast<uint8_t>(intra_op_parallelism_threads);
+    uint8_t inter_threads = static_cast<uint8_t>(inter_op_parallelism_threads);
+
+
+
     d = new PredictorImpl();
     d->data_count = -1;
 
@@ -223,9 +233,9 @@ Predictor::Predictor(std::string pbfile, uint8_t intra_op_parallelism_threads, u
     TF_SessionOptions* sess_opts = TF_NewSessionOptions();
 
     std::cout << "Setting Paralism option ..." << std::endl;
-    std::cout << "intra_op_parallelism_threads = " << static_cast<int>(intra_op_parallelism_threads) << std::endl;
-    std::cout << "inter_op_parallelism_threads = " << static_cast<int>(inter_op_parallelism_threads) << std::endl;
-    uint8_t config_buf[] = {0x10, intra_op_parallelism_threads, 0x28, inter_op_parallelism_threads};
+    std::cout << "intra_op_parallelism_threads = " << static_cast<int>(intra_threads) << std::endl;
+    std::cout << "inter_op_parallelism_threads = " << static_cast<int>(inter_threads) << std::endl;
+    uint8_t config_buf[] = {0x10, intra_threads, 0x28, inter_threads};
 
     TF_SetConfig(sess_opts, config_buf, sizeof(config_buf), d->model.status);
 
@@ -244,8 +254,17 @@ Predictor::Predictor(std::string pbfile, uint8_t intra_op_parallelism_threads, u
 }
 
 
-Predictor::Predictor(std::string folder, std::string tag, uint8_t intra_op_parallelism_threads, uint8_t inter_op_parallelism_threads)
+Predictor::Predictor(std::string folder, std::string tag, int intra_op_parallelism_threads, int inter_op_parallelism_threads)
     : d(nullptr) {
+
+    assert((intra_op_parallelism_threads >= 0) && (inter_op_parallelism_threads >= 0));
+
+    int uint8lim =  static_cast<int>(std::numeric_limits<uint8_t>::max());
+    assert((intra_op_parallelism_threads <= uint8lim) && (inter_op_parallelism_threads <= uint8lim));
+    uint8_t intra_threads = static_cast<uint8_t>(intra_op_parallelism_threads);
+    uint8_t inter_threads = static_cast<uint8_t>(inter_op_parallelism_threads);
+
+    
     d = new PredictorImpl();
     d->data_count = -1;
 
@@ -255,9 +274,9 @@ Predictor::Predictor(std::string folder, std::string tag, uint8_t intra_op_paral
     TF_SessionOptions* sess_opts = TF_NewSessionOptions();
 
     std::cout << "Setting Paralism option ..." << std::endl;
-    std::cout << "intra_op_parallelism_threads = " << static_cast<int>(intra_op_parallelism_threads) << std::endl;
-    std::cout << "inter_op_parallelism_threads = " << static_cast<int>(inter_op_parallelism_threads) << std::endl;
-    uint8_t config_buf[] = {0x10, intra_op_parallelism_threads, 0x28, inter_op_parallelism_threads};
+    std::cout << "intra_op_parallelism_threads = " << static_cast<int>(intra_threads) << std::endl;
+    std::cout << "inter_op_parallelism_threads = " << static_cast<int>(inter_threads) << std::endl;
+    uint8_t config_buf[] = {0x10, intra_threads, 0x28, inter_threads};
 
     TF_SetConfig(sess_opts, config_buf, sizeof(config_buf), d->model.status);
 
@@ -472,7 +491,7 @@ void Predictor::regist_node(std::string name, Predictor::NodeType type) {
     }
 }
 
-void Predictor::set_data_count(int cnt) {
+void Predictor::set_data_count(int64_t cnt) {
     assert(cnt > 0);
 
     if (-1 != d->data_count) {
@@ -481,7 +500,7 @@ void Predictor::set_data_count(int cnt) {
     d->data_count = cnt;
 }
 
-int Predictor::get_data_count() {
+int64_t Predictor::get_data_count() {
     return d->data_count;
 }
 

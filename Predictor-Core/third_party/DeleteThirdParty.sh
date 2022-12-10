@@ -1,6 +1,8 @@
 rm -rf TF_libs 
-rm -rf eigen-3.3.9
+rm -rf EIGEN_libs
+rm -rf ONNX_libs
 
-rm -rf libtensorflow-cpu-linux-x86_64-2.4.0.tar.gz
-rm -rf eigen-3.3.9.tar.gz
+rm -rf libtensorflow-cpu-linux-x86_64-*.tar.gz
+rm -rf eigen*.tar.gz
+rm -rf onnxruntime-linux-x64-*.tgz
 

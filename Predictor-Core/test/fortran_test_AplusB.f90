@@ -3,6 +3,10 @@ use ML_predictor
 use iso_c_binding, only: C_ptr
 
     implicit none
+    ! Input Model Path
+    integer(kind=4) nargs, i
+    character(1024) file_name 
+
     ! Predictor
     TYPE(C_ptr) :: pd
 
@@ -12,9 +16,17 @@ use iso_c_binding, only: C_ptr
     REAL(kind=8), dimension(3,2)  :: arr_c = 0.0d0
 
 
-    ! Create predictor from *.pb
+    nargs = iargc()
 
-    pd = C_createPredictor("test/models/simple_graph_tf2.pb")
+    if ( nargs /= 1 ) then
+        write (*, *) "usage: example-app <path-to-exported-script-module>\n"
+        call exit(-1)
+    end if
+    call getarg(1, file_name) 
+
+
+    ! Create predictor from *.pb
+    pd = C_createPredictor(trim(file_name))
     
     call C_PredictorRegisterInputNode(pd, "input_a")
     call C_PredictorRegisterInputNode(pd, "input_b")

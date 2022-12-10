@@ -29,7 +29,7 @@ class Predictor {
 
     explicit Predictor(std::string pbfile, int intra_op_parallelism_threads, int inter_op_parallelism_threads);
     explicit Predictor(std::string folder, std::string tag, int intra_op_parallelism_threads, int inter_op_parallelism_threads);
-// uint8_t
+
     virtual ~Predictor();
 
     void print_operations();
@@ -81,22 +81,6 @@ class Predictor {
 
     template <typename T>
     bool get_node_data(std::string name, T* p_data, int array_size, DataLayout layout, CopyMethod method);
-
-    // // Default Row major set and get data function 2D
-
-    // template <typename T>
-    // bool set_node_data(std::string name, std::vector<std::vector<T>>& data);
-
-    // template <typename T>
-    // bool get_node_data(std::string name, std::vector<std::vector<T>>& data);
-
-    // // Set and Get data function with special layout requirements 2D
-
-    // template <typename T>
-    // bool set_node_data(std::string name, std::vector<std::vector<T>>& data, DataLayout layout);
-
-    // template <typename T>
-    // bool get_node_data(std::string name, std::vector<std::vector<T>>& data, DataLayout layout);
 
    private:
     PredictorImpl* d;

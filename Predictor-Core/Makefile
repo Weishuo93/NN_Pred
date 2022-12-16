@@ -133,13 +133,13 @@ $(F90_SO): $(F90_SRC)/c_interface.cpp $(F90_SRC)/predictor_mod.f90
 # C++ Test Program
 # ++++++++++++++++++++
 $(CXX_EXE): test/test_AplusB.cpp 
-	LD_LIBRARY_PATH=$(OUTPUT_DIR)/lib:$(${NNPRED_BACKEND}_HOME)/lib:$$LD_LIBRARY_PATH $(CXX) -I./include  $< -o $@  -L$(OUTPUT_DIR)/lib/ -lPredictor 
+	$(CXX) -I./include  $< -o $@  -L$(OUTPUT_DIR)/lib/ -L$(${NNPRED_BACKEND}_HOME)/lib -lPredictor 
 
 
 # Fortran Test Program
 # ++++++++++++++++++++
 $(F90_EXE): test/fortran_test_AplusB.f90 
-	LD_LIBRARY_PATH=$(OUTPUT_DIR)/lib:$(${NNPRED_BACKEND}_HOME)/lib:$$LD_LIBRARY_PATH $(F90) $(F90FLAG) -I $(F90_INC)  $< -o $@  -L$(OUTPUT_DIR)/lib/ -lPredictor_fortran -lPredictor -lstdc++ 
+	$(F90) $(F90FLAG) -I $(F90_INC)  $< -o $@  -L$(OUTPUT_DIR)/lib/ -L$(${NNPRED_BACKEND}_HOME)/lib -lPredictor_fortran -lPredictor -lstdc++ 
 
 
 # $(CXX_SO):

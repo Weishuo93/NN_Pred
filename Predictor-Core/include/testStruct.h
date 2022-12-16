@@ -1,6 +1,6 @@
 
 
-// file: NNPred.hpp:
+// file: NNPred.h:
 class NNPredImpl;
 // Do we need this? 
 class NNPredImpl_TF;
@@ -32,7 +32,7 @@ public:
 };
 
 
-// file: NNPredImpl.hpp:
+// file: NNPredImpl.h:
 class NNPredImpl {
 private:
     NNPredImpl
@@ -47,7 +47,7 @@ public:
 };
 
 // file: NNPredImpl_TF.cpp:
-#include "NNPredImpl.hpp"
+#include "NNPredImpl.h"
 #include "TF_CAPI"
 class NNPredImpl_TF: public NNPredImpl{
 public:
@@ -62,7 +62,7 @@ NNPredImpl_TF::~NNPredImpl_TF() {
 }
 
 // file: NNPredImpl_ONNX.cpp:
-#include "NNPredImpl.hpp"
+#include "NNPredImpl.h"
 #include "ONNX_CAPI"
 class NNPredImpl_ONNX: public NNPredImpl{
 public:

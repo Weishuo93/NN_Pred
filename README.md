@@ -114,10 +114,10 @@ export MY_ONNX_HOME=your/ONNX/runtime/library/dir
 ## API Documents
 
 The API are all demonstrated with a simple `A+B=C` model, the PDF files can be found as follows:
-- C++ example and API document
-- Fortran example and API document
-- OpenFOAM example and API document
-- Explanation on CFL3D ML module
+- [C++ example and API document](https://github.com/Weishuo93/NN_Pred/blob/master/Documentation/Cpp_Example_API.pdf)
+- [Fortran example and API document](https://github.com/Weishuo93/NN_Pred/blob/master/Documentation/Fortran_Example_API.pdf)
+- [OpenFOAM example and API document](https://github.com/Weishuo93/NN_Pred/blob/master/Documentation/OpenFOAM_Module_Example_API.pdf)
+- [Explanation on CFL3D ML module](https://github.com/Weishuo93/NN_Pred/blob/master/Documentation/Fortran_Module_Template.pdf)
 
 
 ## How to cite

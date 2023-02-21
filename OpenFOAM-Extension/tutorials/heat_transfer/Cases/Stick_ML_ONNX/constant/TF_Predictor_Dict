@@ -18,7 +18,7 @@ FoamFile
 model
 {
     readFromPB                yes;
-    modelDirectory            "ONNX_Model/emissivity.onnx";
+    modelDirectory            "ONNX_Model/SKL_GPR.onnx";
     //tags                      serve;
     copyMethod                Eigen;           // Eigen for fast
     layout                    ColMajor;        // ColMajor or RowMajor

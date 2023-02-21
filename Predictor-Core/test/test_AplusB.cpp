@@ -43,7 +43,7 @@ int main(int argc, char const *argv[]) {
     pd.set_node_data("input_a", vec_input1);
     pd.set_node_data("input_b", vec_input2);
 
-    // Run model
+    // Run model 
     pd.run();
 
     // Get output into the target container

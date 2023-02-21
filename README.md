@@ -3,8 +3,8 @@
 This library aims at running tensorflow models in C++ and Fortran program. The library is mainly designed for deploying neural networks in CFD softwares, the extensions in **OpenFOAM** and **CFL3D** might reduce the burden in integrating ML with CFD softwares.
 
 The following features might be useful to you:
-- Support loading *.pb graph saved by frozen-graph utils in TF1
-- Support loading [SavedModel](https://www.tensorflow.org/guide/saved_model) format saved by TF2 Keras and TF estimator
+- TensorFlow Backends: Support loading *.pb graph and [SavedModel](https://www.tensorflow.org/guide/saved_model) format.
+- ONNX Backends: Support loading [*.onnx](https://onnxruntime.ai/) ML models (from PyTorch, Sklearn, etc)
 - Support memory layout transpose when set/get data to/from nodes
 - Automatic type casting according to the type of your data container and node definition
 - Vectorizatized casting and transpose is integrated through Eigen 
@@ -52,16 +52,26 @@ source activate.sh
 This script sets the necessary environmental variables to properly compile the library. The `Predictor-Core` needs to be compiled firstly, as the `OpenFOAM-Extension` and `CFL3D-Extension` all depends on the core predictor.
 
 ### Third party dependencies
-The `Predictor-Core` uses Tensorflow C-API, the dependencies are as follow:
-
+The `Predictor-Core` support two different backends, The TF backends rely on Tensorflow C-API, the dependencies are as follow:
 - [libtensorflow.so](https://www.tensorflow.org/install/lang_c)
 - [Eigen](https://gitlab.com/libeigen/eigen/-/releases)
+
+The the dependency of ONNX backends is:
+ - [OnnxRuntime](https://onnxruntime.ai/)
 
 By executing the download scripts they will be downloaded into third_party directory:
 ```sh
 cd Predictor-Core/third_party
 ./DownloadThirdParty.sh
 ```
+### Switching backends
+The backend is specified by a environmental variable in the activate.sh file. One can modify the script or set the environment variable manually in the shell command line.
+```sh
+export NNPRED_BACKEND=ONNX  # ONNX Runtime backend
+export NNPRED_BACKEND=TF    # TensorFlow backend
+```
+
+
 
 ### Build the Predictor-Core
 
@@ -80,7 +90,12 @@ make f90test  # fortran test program without running
 make runf     # fortran test program and run
 ```
 
-After the compilation, you might need to add the compiled libraries (located in `./Predictor-Core/outputs/lib`) in your `$LD_LIBRARY_PATH`. This operation is done by sourcing the `activate.sh` in the beginning of the tutorial.
+After the compilation, both the two backends are compiled by default, and the make target: `cxxso` will create a symbolic link pointing to the library specified by environmental variable `$NNPRED_BACKEND`. If the backend need to be changed, on can modify `$NNPRED_BACKEND` and execute the make target:
+```sh
+make alias-predictor # Create the symbolic link to the backend lib
+```
+
+you might need to add the compiled libraries (located in `./Predictor-Core/outputs/lib`) in your `$LD_LIBRARY_PATH`. This operation is done by sourcing the `activate.sh` in the beginning of the tutorial.
 
 The installation of `OpenFOAM-Extension` and `CFL3D-Extension` please refer to the `README.md` in each separated folders.
  
@@ -93,7 +108,17 @@ If you want to use the locally installed libs, please modify the two environment
 ```sh
 export MY_EIGEN_HOME=your/eigen/dir
 export MY_TF_HOME=your/TF/dir/with/libtensorflow.so
+export MY_ONNX_HOME=your/ONNX/runtime/library/dir
 ```
+
+## API Documents
+
+The API are all demonstrated with a simple `A+B=C` model, the PDF files can be found as follows:
+- C++ example and API document
+- Fortran example and API document
+- OpenFOAM example and API document
+- Explanation on CFL3D ML module
+
 
 ## How to cite
 If this software brings convenience to you, please consider citing the following paper, reported in the bibtex entries:

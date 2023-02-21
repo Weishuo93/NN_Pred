@@ -1,0 +1,60 @@
+#!/bin/sh
+foamListTimes -rm
+rm -r postProcessing 2>/dev/null
+rm -r Results 2>/dev/null
+rm -r Logs 2>/dev/null
+mkdir -p Results
+mkdir -p Logs
+
+declare -A T_ref_list
+
+T_ref_list[1]=10
+T_ref_list[2]=20
+T_ref_list[3]=30
+T_ref_list[4]=40
+T_ref_list[5]=50
+
+declare -A Model_Name
+
+Model_Name[NN]="emissivity.onnx"
+Model_Name[RF]="SKL_RF.onnx"
+Model_Name[SVR]="SKL_SVR.onnx"
+Model_Name[GPR]="SKL_GPR.onnx"
+
+for j in "${!Model_Name[@]}"
+do
+    Model=$j
+    File_Name=${Model_Name[$Model]}
+
+
+    foamListTimes -rm
+    rm -r postProcessing 2>/dev/null
+    rm -r Results/${Model} 2>/dev/null
+    rm -r Logs/${Model} 2>/dev/null
+    mkdir -p Results/${Model}
+    mkdir -p Logs/${Model}
+
+    sed "s/MODEL_FILE_NAME/${File_Name}/g" constant/TF_Predictor_Dict.template > constant/TF_Predictor_Dict
+
+    for i in "${!T_ref_list[@]}"
+    do
+        index=$i
+        T_ref_value=${T_ref_list[$index]}
+        foamListTimes -rm
+        echo "Running case: T_ref = $T_ref_value"
+        sed "s/T_REF/${T_ref_value}.0/g" constant/transportProperties.template > constant/transportProperties
+        laplacianFoam_ML >Logs/${Model}/log.Tref_${T_ref_value} 
+        echo "Log has been written in log.Tref_${T_ref_value}, start processing results"
+        timeDir=$(foamListTimes -latestTime)
+        rm -r postProcessing 2>/dev/null
+        postProcess -func singleGraph -latestTime 1>/dev/null 2>/dev/null
+        cp -r postProcessing/singleGraph/${timeDir}/line_T.xy ./Results/${Model}/T_ref_${T_ref_value}.xy
+        echo "Case: T_ref = $T_ref_value Processed"
+    done
+    echo "Model: $Model Processed"
+done
+
+
+
+
+# -----------------------------------------------------------------------------

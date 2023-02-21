@@ -1,0 +1,12 @@
+*.mod
+*.o
+outputs
+
+
+third_party/EIGEN_libs
+third_party/TF_libs
+third_party/libtensorflow*
+third_party/eigen*
+
+third_party/ONNX_libs
+third_party/onnx*

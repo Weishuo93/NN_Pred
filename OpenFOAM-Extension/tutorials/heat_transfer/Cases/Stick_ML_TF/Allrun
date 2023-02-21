@@ -1,0 +1,37 @@
+#!/bin/sh
+foamListTimes -rm
+rm -r postProcessing 2>/dev/null
+rm -r Results 2>/dev/null
+rm -r Logs 2>/dev/null
+mkdir -p Results
+mkdir -p Logs
+
+declare -A Ret_vs_Ubar
+
+T_ref_list[1]=10
+T_ref_list[2]=20
+T_ref_list[3]=30
+T_ref_list[4]=40
+T_ref_list[5]=50
+
+
+for i in "${!T_ref_list[@]}"
+do
+    index=$i
+    T_ref_value=${T_ref_list[$index]}
+    foamListTimes -rm
+    echo "Running case: T_ref = $T_ref_value"
+    sed "s/T_REF/${T_ref_value}.0/g" constant/transportProperties.template > constant/transportProperties
+    laplacianFoam_ML >Logs/log.Tref_${T_ref_value} 
+    echo "Log has been written in log.Tref_${T_ref_value}, start processing results"
+    timeDir=$(foamListTimes -latestTime)
+    rm -r postProcessing 2>/dev/null
+    postProcess -func singleGraph -latestTime 1>/dev/null 2>/dev/null
+    cp -r postProcessing/singleGraph/${timeDir}/line_T.xy ./Results/T_ref_${T_ref_value}.xy
+    echo "Case: T_ref = $T_ref_value Processed"
+done
+
+
+
+
+# -----------------------------------------------------------------------------

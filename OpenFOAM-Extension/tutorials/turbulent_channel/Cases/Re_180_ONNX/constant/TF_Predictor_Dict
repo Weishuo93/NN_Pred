@@ -1,0 +1,42 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  4.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      TF_Predictor_Dict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+model
+{
+    readFromPB                yes;
+    modelDirectory            "graph/eddyviscosity.onnx";
+    //tags                      serve;
+    copyMethod                Eigen;           // Eigen for fast
+    layout                    ColMajor;        // ColMajor or RowMajor
+    inputs                    ("input");       //Node name for inputs, use space to separate multiple inputs: (a b c d)
+    outputs                   ("output");        //Node name for outputs
+}
+
+/*
+model2
+{
+    readFromPB                no;
+    modelDirectory            "TF_Models/model_2in_2out_double";
+    tags                      "serve";       // use savedmodel-cli to check the tags for saved model
+    copyMethod                Safe;        // Eigen for fast
+    layout                    ColMajor;    // ColMajor or RowMajor
+    inputs                    (serving_default_dense_input);       //Node name for inputs, use space to separate multiple inputs: (a b c d)
+    outputs                   (StatefulPartitionedCall);              //Node name for outputs
+}
+*/
+
+// ************************************************************************* //

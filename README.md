@@ -58,6 +58,7 @@ The `Predictor-Core` support two different backends, The TF backends rely on Ten
 
 The the dependency of ONNX backends is:
  - [OnnxRuntime](https://onnxruntime.ai/)
+ - [Eigen](https://gitlab.com/libeigen/eigen/-/releases)
 
 By executing the download scripts they will be downloaded into third_party directory:
 ```sh

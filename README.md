@@ -124,10 +124,12 @@ The API are all demonstrated with a simple `A+B=C` model, the PDF files can be f
 If this software brings convenience to you, please consider citing the following paper, reported in the bibtex entries:
 ```
 @article{NNPred,
-    Author = {Weishuo Liu and Ziming Song and Jian Fang},
-    Title = {NNPred: A Predictor Library to Deploy Neural Networks in Computational Fluid Dynamics software},
-    Year = {2022},
-    Eprint = {arXiv:2209.12339},
+  title={NNPred: Deploying neural networks in computational fluid dynamics codes to facilitate data-driven modeling studies},
+  author={Liu, Weishuo and Song, Ziming and Fang, Jian},
+  journal={Computer Physics Communications},
+  pages={108775},
+  year={2023},
+  publisher={Elsevier}
 }
 ```
 

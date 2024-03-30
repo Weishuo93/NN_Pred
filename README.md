@@ -1,13 +1,13 @@
-# NN_Pred -- An interfacing library to deploy NN models in CFD codes
+# NN_Pred -- An interfacing library to deploy ML models in CFD codes
 
-This library aims at running tensorflow models in C++ and Fortran program. The library is mainly designed for deploying neural networks in CFD softwares, the extensions in **OpenFOAM** and **CFL3D** might reduce the burden in integrating ML with CFD softwares.
+This library aims at running tensorflow models in C++ and Fortran programs. The library is mainly designed for deploying neural networks in CFD software, the extensions in **OpenFOAM** and **CFL3D** might reduce the burden of integrating ML with CFD software.
 
 The following features might be useful to you:
 - TensorFlow Backends: Support loading *.pb graph and [SavedModel](https://www.tensorflow.org/guide/saved_model) format.
 - ONNX Backends: Support loading [*.onnx](https://onnxruntime.ai/) ML models (from PyTorch, Sklearn, etc)
 - Support memory layout transpose when set/get data to/from nodes
 - Automatic type casting according to the type of your data container and node definition
-- Vectorizatized casting and transpose is integrated through Eigen 
+- Vectorizatized casting and transposing is integrated through Eigen 
 - Basic APIs in C++ and Fortran
 - Extensions in OpenFOAM and CFL3D to assist CFD simulation
 
@@ -52,11 +52,11 @@ source activate.sh
 This script sets the necessary environmental variables to properly compile the library. The `Predictor-Core` needs to be compiled firstly, as the `OpenFOAM-Extension` and `CFL3D-Extension` all depends on the core predictor.
 
 ### Third party dependencies
-The `Predictor-Core` support two different backends, The TF backends rely on Tensorflow C-API, the dependencies are as follow:
+The `Predictor-Core` supports two different backends, The TF backends rely on Tensorflow C-API, the dependencies are as follows:
 - [libtensorflow.so](https://www.tensorflow.org/install/lang_c)
 - [Eigen](https://gitlab.com/libeigen/eigen/-/releases)
 
-The the dependency of ONNX backends is:
+The dependency of ONNX backends is:
  - [OnnxRuntime](https://onnxruntime.ai/)
  - [Eigen](https://gitlab.com/libeigen/eigen/-/releases)
 
@@ -66,7 +66,7 @@ cd Predictor-Core/third_party
 ./DownloadThirdParty.sh
 ```
 ### Switching backends
-The backend is specified by a environmental variable in the activate.sh file. One can modify the script or set the environment variable manually in the shell command line.
+The backend is specified by an environmental variable in the activate.sh file. One can modify the script or set the environment variable manually in the shell command line.
 ```sh
 export NNPRED_BACKEND=ONNX  # ONNX Runtime backend
 export NNPRED_BACKEND=TF    # TensorFlow backend
@@ -91,14 +91,14 @@ make f90test  # fortran test program without running
 make runf     # fortran test program and run
 ```
 
-After the compilation, both the two backends are compiled by default, and the make target: `cxxso` will create a symbolic link pointing to the library specified by environmental variable `$NNPRED_BACKEND`. If the backend need to be changed, on can modify `$NNPRED_BACKEND` and execute the make target:
+After the compilation, both the two backends are compiled by default, and the make target: `cxxso` will create a symbolic link pointing to the library specified by environmental variable `$NNPRED_BACKEND`. If the backend needs to be changed, one can modify `$NNPRED_BACKEND` and execute the make target:
 ```sh
 make alias-predictor # Create the symbolic link to the backend lib
 ```
 
-you might need to add the compiled libraries (located in `./Predictor-Core/outputs/lib`) in your `$LD_LIBRARY_PATH`. This operation is done by sourcing the `activate.sh` in the beginning of the tutorial.
+you might need to add the compiled libraries (located in `./Predictor-Core/outputs/lib`) in your `$LD_LIBRARY_PATH`. This operation is done by sourcing the `activate.sh` at the beginning of the tutorial.
 
-The installation of `OpenFOAM-Extension` and `CFL3D-Extension` please refer to the `README.md` in each separated folders.
+The installation of `OpenFOAM-Extension` and `CFL3D-Extension` please refer to the `README.md` in each separate folder.
  
 ### [Build OpenFOAM-Extension](https://github.com/Weishuo93/NN_Pred/tree/master/OpenFOAM-Extension)
 
@@ -135,9 +135,9 @@ If this software brings convenience to you, please consider citing the following
 ```
 
 ## License
-The source files in `Predictor-Core` folder is freely available under the MIT License. 
+The source files in the `Predictor-Core` folder are freely available under the MIT License. 
 
-The files in `OpenFOAM-Extension` folder is published under GNU Lesser General Public License (LGPL), Version 3. The files in `CFL3D-Extension` folder is published under Apache License, Version 2.
+The files in the `OpenFOAM-Extension` folder are published under GNU Lesser General Public License (LGPL), Version 3. The files in the `CFL3D-Extension` folder are published under Apache License, Version 2.
 
 
 

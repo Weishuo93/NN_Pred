@@ -11,8 +11,8 @@ For OpenFOAM.org versions:
 *   [**OpenFOAM v5.x**](https://github.com/OpenFOAM/OpenFOAM-5.x) or
 *   [**OpenFOAM v6**](https://github.com/OpenFOAM/OpenFOAM-6)
 
-For OpenFOAM.com versions (should work for all latest distributions):
-*   [**latest**](https://develop.openfoam.com/Development/openfoam) 
+For OpenFOAM.com versions (should work for all distributions since v1606):
+*   [**latest (v2312)**](https://develop.openfoam.com/Development/openfoam) 
 
 The `TF_OF_Predictor` can be compiled in more recent version.
 

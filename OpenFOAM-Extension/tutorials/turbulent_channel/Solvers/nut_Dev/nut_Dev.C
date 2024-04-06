@@ -779,6 +779,25 @@ nut_Dev::nut_Dev
             )
         );
         // Print Information of Current choice of Features
+
+#if defined(OPENFOAM) && OPENFOAM >= 1906
+        Switch UseQ1("UseQ1", nut_Dev_Dict);
+        Info << "UseQ1 is " << UseQ1 << endl;
+        Switch UseQ2("UseQ2", nut_Dev_Dict);
+        Info << "UseQ2 is " << UseQ2 << endl;
+        Switch UseQ3("UseQ3", nut_Dev_Dict);
+        Info << "UseQ3 is " << UseQ3 << endl;
+        Switch UseQ4("UseQ4", nut_Dev_Dict);
+        Info << "UseQ4 is " << UseQ4 << endl;
+        Switch UseQ5("UseQ5", nut_Dev_Dict);
+        Info << "UseQ5 is " << UseQ5 << endl;
+        Switch UseQ6("UseQ6", nut_Dev_Dict);
+        Info << "UseQ6 is " << UseQ6 << endl;
+        Switch UseQ7("UseQ7", nut_Dev_Dict);
+        Info << "UseQ7 is " << UseQ7 << endl;
+        Switch UseQ8("UseQ8", nut_Dev_Dict);
+        Info << "UseQ8 is " << UseQ8 << endl;
+#else
         Switch UseQ1(nut_Dev_Dict.lookup("UseQ1"));
         Info << "UseQ1 is " << UseQ1 << endl;
         Switch UseQ2(nut_Dev_Dict.lookup("UseQ2"));
@@ -795,6 +814,8 @@ nut_Dev::nut_Dev
         Info << "UseQ7 is " << UseQ7 << endl;
         Switch UseQ8(nut_Dev_Dict.lookup("UseQ8"));
         Info << "UseQ8 is " << UseQ8 << endl;
+#endif
+
 
 
 

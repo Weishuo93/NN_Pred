@@ -86,14 +86,15 @@ TF_OF_Predictor_Impl::TF_OF_Predictor_Impl(std::string Dict_dir, std::string Mod
     Foam::dictionary model_info;
     model_info = model_dict.subDict(Model_name);
 
-    Foam::Switch is_pb = model_info.lookup("readFromPB");
+
+    Foam::Switch is_pb = static_cast<Foam::Switch>(model_info.lookup("readFromPB"));
 
     if (is_pb) {
-        Foam::fileName PB_file = model_info.lookup("modelDirectory");
+        Foam::fileName PB_file = static_cast<Foam::fileName>(model_info.lookup("modelDirectory"));
         this->pd = new Predictor(PB_file);
     } else {
-        Foam::fileName Saved_Model_Dir = model_info.lookup("modelDirectory");
-        Foam::fileName tags = model_info.lookup("tags");
+        Foam::fileName Saved_Model_Dir =  static_cast<Foam::fileName>(model_info.lookup("modelDirectory"));
+        Foam::fileName tags =  static_cast<Foam::fileName>(model_info.lookup("tags"));
         this->pd = new Predictor(Saved_Model_Dir, tags);
     }
 
@@ -110,7 +111,7 @@ TF_OF_Predictor_Impl::TF_OF_Predictor_Impl(std::string Dict_dir, std::string Mod
         this->pd->regist_node(this->outputs_names[i], Predictor::OUTPUT_NODE);
     }
 
-    Foam::word layout_string = model_info.lookup("layout");
+    Foam::word layout_string =  static_cast<Foam::word>(model_info.lookup("layout"));
     if (layout_string == "ColMajor") {
         this->layout = Predictor::ColumnMajor;
     } else if (layout_string == "RowMajor") {
@@ -120,7 +121,7 @@ TF_OF_Predictor_Impl::TF_OF_Predictor_Impl(std::string Dict_dir, std::string Mod
         Foam::Info << "Failed to recognize data layout, use default ColMajor" << Foam::endl;
     }
 
-    Foam::word method_string = model_info.lookup("copyMethod");
+    Foam::word method_string = static_cast<Foam::word>(model_info.lookup("copyMethod"));
     if (method_string == "Eigen") {
         this->method = Predictor::Eigen;
     } else if (method_string == "Safe") {

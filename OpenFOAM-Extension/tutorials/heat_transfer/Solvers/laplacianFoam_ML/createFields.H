@@ -29,6 +29,50 @@
     );
 
 
+#if defined(OPENFOAM) && OPENFOAM >= 1906
+
+    Info<< "Reading diffusivity DT\n" << endl;
+
+    dimensionedScalar DT
+    (
+        "DT",
+        transportProperties
+    );
+
+    Info << "Reading T_inf \n" << endl;
+
+    dimensionedScalar T_inf(
+        "T_inf",
+        transportProperties
+    );
+
+
+    Info << "Reading h \n" << endl;
+
+    dimensionedScalar h(
+        "h",
+        transportProperties
+    );
+
+
+    Info << "Reading T_ref \n" << endl;
+
+    dimensionedScalar T_ref(
+        "T_ref",
+        transportProperties
+    );
+
+
+    Info << "Reading eps_ref \n" << endl;
+
+    dimensionedScalar eps_ref(
+        "eps_ref",
+        transportProperties
+    );
+
+
+#else
+
     Info<< "Reading diffusivity DT\n" << endl;
 
     dimensionedScalar DT
@@ -49,13 +93,11 @@
         transportProperties.lookup("h")
     );
 
-
     Info << "Reading T_ref \n" << endl;
 
     dimensionedScalar T_ref(
         transportProperties.lookup("T_ref")
     );
-
 
     Info << "Reading eps_ref \n" << endl;
 
@@ -63,9 +105,10 @@
         transportProperties.lookup("eps_ref")
     );
 
+    
+#endif
 
     Info<< "Creating field eps \n" << endl;
-
 
     volScalarField eps
     (
@@ -90,5 +133,5 @@
             IOobject::NO_READ,
             IOobject::AUTO_WRITE
         ),
-        eps
+        0.0*eps
     );

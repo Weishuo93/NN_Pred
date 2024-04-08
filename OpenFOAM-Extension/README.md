@@ -7,8 +7,8 @@ The folder consists of the `TF_OF_Predictor` and the tutorial cases including a 
 Firstly, the `Predictor-Core` needs to be properly compiled. Then the `OpenFOAM-Extension` can be compiled. The entire folder supports the following OpenFOAM versions.
 
 For OpenFOAM.org versions:
-*   [**OpenFOAM v4.x**](https://github.com/OpenFOAM/OpenFOAM-4.x) or
-*   [**OpenFOAM v5.x**](https://github.com/OpenFOAM/OpenFOAM-5.x) or
+*   [**OpenFOAM v4.x**](https://github.com/OpenFOAM/OpenFOAM-4.x) 
+*   [**OpenFOAM v5.x**](https://github.com/OpenFOAM/OpenFOAM-5.x) 
 *   [**OpenFOAM v6**](https://github.com/OpenFOAM/OpenFOAM-6)
 
 For OpenFOAM.com versions (should work for all distributions since v1606):

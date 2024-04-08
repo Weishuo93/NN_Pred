@@ -1,6 +1,17 @@
 # Compiler 
 # -------------------------------------------------------------------------------
-CXX := g++
+# Default compiler
+CXX ?= g++
+
+# Extract compiler type and version (if any) from WM_COMPILER
+COMPILER_TYPE := $(subst Gcc,g++,$(filter Gcc%,$(WM_COMPILER)))
+COMPILER_TYPE := $(subst Clang,clang,$(filter Clang%,$(WM_COMPILER))$(COMPILER_TYPE))
+
+# Check if we have identified a compiler type from WM_COMPILER
+ifneq ($(COMPILER_TYPE),)
+    CXX = $(COMPILER_TYPE)
+endif
+
 EIGEN_CXX_FLAG := -DEIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS -DEIGEN_MPL2_ONLY
 ONNX_CXX_FLAG := 
 CXXFLAG := -O3 -D_CPU_SERIAL
@@ -115,12 +126,14 @@ f90test: cxxso f90so $(F90_EXE)
 $(CXX_SO_TF): source/C++/predictor_tf.cpp 
 	mkdir -p $(OUTPUT_DIR)/bin
 	mkdir -p $(OUTPUT_DIR)/lib
+	@echo "Building $(CXX_SO_TF) with $(CXX)"
 	$(CXX) $(CXXFLAG) $(EIGEN_CXX_FLAG) $(INCS) $(TF_INCS) $(EIGEN_INCS) -fPIC -shared $< -o $@  $(TF_LIBS)
 
 
 $(CXX_SO_ONNX): source/C++/predictor_onnx.cpp 
 	mkdir -p $(OUTPUT_DIR)/bin
 	mkdir -p $(OUTPUT_DIR)/lib
+	@echo "Building $(CXX_SO_ONNX) with $(CXX)"
 	$(CXX) $(CXXFLAG) $(EIGEN_CXX_FLAG) $(INCS) $(ONNX_INCS) $(EIGEN_INCS) -fPIC -shared $< -o $@  $(ONNX_LIBS)
 
 

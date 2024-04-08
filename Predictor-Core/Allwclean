@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Ensure the script runs from its current directory
+cd "${0%/*}" || exit
+
+echo "========================================"
+echo "Deleting third-party libraries..."
+cd third_party || exit
+# Check if the third-party libraries exist, if not, download them.
+./DeleteThirdParty.sh 
+cd ..  # Go back to the Predictor-Core directory
+
+echo "========================================"
+echo "Cleaning Predictor-Core..."
+make clean 

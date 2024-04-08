@@ -1,0 +1,11 @@
+#!/bin/sh
+cd "${0%/*}" || exit  # Run from this directory
+
+wmake TF_OF_Predictor/lib || { echo "wmake TF_OF_Predictor/lib failed"; exit 1; }
+
+wmake tutorials/heat_transfer/Solvers/laplacianFoam_Ideal || { echo "wmake tutorials/heat_transfer/Solvers/laplacianFoam_Ideal failed"; exit 1; }
+wmake tutorials/heat_transfer/Solvers/laplacianFoam_ML || { echo "wmake tutorials/heat_transfer/Solvers/laplacianFoam_ML failed"; exit 1; }
+
+wmake tutorials/turbulent_channel/Solvers/ML_RAS_Model_Incompressible || { echo "wmake tutorials/turbulent_channel/Solvers/ML_RAS_Model_Incompressible failed"; exit 1; }
+wmake tutorials/turbulent_channel/Solvers/ML_RAS_Model_Compressible || { echo "wmake tutorials/turbulent_channel/Solvers/ML_RAS_Model_Compressible failed"; exit 1; }
+

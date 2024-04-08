@@ -597,7 +597,7 @@ static void set_tensor_data_col_simple(T_data* src, Ort::Value* dst) {
     
     dst->GetTensorTypeAndShapeInfo().GetDimensions(dst_shape, rank);
     int64_t* src_shape = new int64_t[rank];
-    for (int i = 0; i < rank; ++i) {
+    for (size_t i = 0; i < rank; ++i) {
         src_shape[i] = dst_shape[rank - i - 1];
     }
 

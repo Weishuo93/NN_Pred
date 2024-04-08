@@ -1,0 +1,11 @@
+#!/bin/sh
+cd "${0%/*}" || exit  # Run from this directory
+
+wclean TF_OF_Predictor/lib || { echo "wclean TF_OF_Predictor/lib failed"; exit 1; }
+
+wclean tutorials/heat_transfer/Solvers/laplacianFoam_Ideal || { echo "wclean tutorials/heat_transfer/Solvers/laplacianFoam_Ideal failed"; exit 1; }
+wclean tutorials/heat_transfer/Solvers/laplacianFoam_ML || { echo "wclean tutorials/heat_transfer/Solvers/laplacianFoam_ML failed"; exit 1; }
+
+wclean tutorials/turbulent_channel/Solvers/ML_RAS_Model_Incompressible || { echo "wclean tutorials/turbulent_channel/Solvers/ML_RAS_Model_Incompressible failed"; exit 1; }
+wclean tutorials/turbulent_channel/Solvers/ML_RAS_Model_Compressible || { echo "wclean tutorials/turbulent_channel/Solvers/ML_RAS_Model_Compressible failed"; exit 1; }
+

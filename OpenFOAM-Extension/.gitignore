@@ -1,4 +1,7 @@
 lnInclude
 
 linux64Gcc*
+linux64Clang*
 [1-9]*
+log
+contrastU.testPy

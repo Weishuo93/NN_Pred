@@ -99,8 +99,9 @@ struct NodeInfo {
     TF_Tensor*                     tensor;
     TF_Output                      op;
     NodeInfo()
-        : tensor(nullptr), op({nullptr, 0}),type(static_cast<TF_DataType>(-1)){};
+        : type(static_cast<TF_DataType>(-1)), tensor(nullptr), op({nullptr, 0}){};
 };
+
 
 
 struct TFModel {
@@ -887,7 +888,7 @@ bool Predictor::set_node_data(std::string name, T* p_data, int array_size, Predi
         TF_DataType type_information = it->second.type;
         assert(0 != shape_information.size());
 
-        for (int i = 0; i < shape_information.size(); i++) {
+        for (size_t i = 0; i < shape_information.size(); i++) {
             if (shape_information[i] <= 0) {
                 // std::cout << "Setting unknown dim rank: " << i << " to given data length: " << d->data_count << std::endl;
                 shape_information[i] = d->data_count;
@@ -1481,7 +1482,7 @@ bool Predictor::get_node_data(std::string name, T* p_data, int array_size, Predi
         return false;
     }
 
-    for (int i = 0; i < shape_information.size(); i++) {
+    for (size_t i = 0; i < shape_information.size(); i++) {
         if (shape_information[i] <= 0) {
             DEBUG_EXECUTE(std::cout << "Setting unknown dim rank: " << i << " to given data length: " << d->data_count << std::endl);
             shape_information[i] = d->data_count;
@@ -1775,7 +1776,7 @@ void Predictor::run() {
 
 
 
-    for (int i = 0; i < output_ops.size(); ++i) {
+    for (size_t i = 0; i < output_ops.size(); ++i) {
         std::string key = TF_OperationName(output_ops[i].oper);
 
         if (d->output_nodes[key].tensor == nullptr) {

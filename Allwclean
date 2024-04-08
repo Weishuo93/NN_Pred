@@ -1,0 +1,17 @@
+#!/bin/sh
+cd "${0%/*}" || exit 
+
+echo "========================================"
+echo "Cleaning Predictor-Core..."
+Predictor-Core/Allwclean || { echo "Allclean in Predictor-Core failed"; exit 1; }
+echo "Done"
+
+echo "========================================"
+echo "Cleaning OpenFOAM-Extension ... "
+OpenFOAM-Extension/Allwclean || { echo "Allwclean in OpenFOAM-Extension failed"; exit 1; }
+echo "Done"
+
+echo "========================================"
+echo "Deactivating Environments ..."
+source ./deactivate.sh
+echo "Done"

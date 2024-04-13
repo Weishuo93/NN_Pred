@@ -14,6 +14,8 @@ The following features might be useful to you:
 ### A minimal example of usage of the core predictor in C++:
 
 ```c++
+#include "predictor.h"  //header
+
 // Load the Graph:
 Predictor pd("graph.pb");
 
@@ -91,7 +93,7 @@ make f90test  # fortran test program without running
 make runf     # fortran test program and run
 ```
 
-After the compilation, both the two backends are compiled by default, and the make target: `cxxso` will create a symbolic link pointing to the library specified by environmental variable `$NNPRED_BACKEND`. If the backend needs to be changed, one can modify `$NNPRED_BACKEND` and execute the make target:
+After the compilation, both backends are compiled by default, and the make target: `cxxso` will create a symbolic link pointing to the library specified by the environmental variable `$NNPRED_BACKEND`. If the backend needs to be changed, one can modify `$NNPRED_BACKEND` and execute the make target:
 ```sh
 make alias-predictor # Create the symbolic link to the backend lib
 ```

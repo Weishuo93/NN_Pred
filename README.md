@@ -123,9 +123,9 @@ you might need to add the compiled libraries (located in `./Predictor-Core/outpu
 ### Extensions for CFD solvers
 The installation of `OpenFOAM-Extension` and `CFL3D-Extension` please refer to the `README.md` in each separate folder.
  
-### [Build OpenFOAM-Extension](https://github.com/Weishuo93/NN_Pred/tree/master/OpenFOAM-Extension)
+#### [Build OpenFOAM-Extension](https://github.com/Weishuo93/NN_Pred/tree/master/OpenFOAM-Extension)
 
-### [Build CFL3D-Extension](https://github.com/Weishuo93/NN_Pred/tree/master/CFL3D-Extension)
+#### [Build CFL3D-Extension](https://github.com/Weishuo93/NN_Pred/tree/master/CFL3D-Extension)
 
 For OpenFOAM Users, the `Allwmake` script could automatically compile all the OpenFOAM related binaries:
 ```sh

@@ -1,23 +1,23 @@
-#ifndef PREDICTOR_NEW_H
-#define PREDICTOR_NEW_H
+#ifndef DYN_PREDICTOR_H
+#define DYN_PREDICTOR_H
 
 #include <vector>
 #include <string>
 #include "settings.h"
 
+class DynPredictorImpl;
 
-class PredictorImpl;
+class DynPredictor {
 
-class Predictor {
    public:
 
-    explicit Predictor(std::string pbfile);
-    explicit Predictor(std::string folder, std::string tag);
+    explicit DynPredictor(std::string pbfile);
+    explicit DynPredictor(std::string folder, std::string tag);
 
-    explicit Predictor(std::string pbfile, int intra_op_parallelism_threads, int inter_op_parallelism_threads);
-    explicit Predictor(std::string folder, std::string tag, int intra_op_parallelism_threads, int inter_op_parallelism_threads);
+    explicit DynPredictor(std::string pbfile, int intra_op_parallelism_threads, int inter_op_parallelism_threads);
+    explicit DynPredictor(std::string folder, std::string tag, int intra_op_parallelism_threads, int inter_op_parallelism_threads);
 
-    virtual ~Predictor();
+    virtual ~DynPredictor();
 
     void print_operations();
     void print_operations(std::string node_name);
@@ -70,7 +70,7 @@ class Predictor {
     bool get_node_data(std::string name, T* p_data, int array_size, Settings::DataLayout layout, Settings::CopyMethod method);
 
    private:
-    PredictorImpl* d;
+    DynPredictorImpl* d;
 };
 
-#endif // PREDICTOR_NEW_H
+#endif // DYN_PREDICTOR_H

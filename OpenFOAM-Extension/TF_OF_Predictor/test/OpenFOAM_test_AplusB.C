@@ -32,7 +32,18 @@ Description
 
 using namespace Foam;
 
-int main() {
+int main(int argc, char const *argv[]) {
+
+    if (argc != 2) {
+        std::cerr << "usage: example-app <path-to-exported-script-module>\n";
+        return -1;
+    }
+
+    std::string sub_dict(argv[1]);
+
+    Info << "Running model from subdictionary: " << sub_dict << " ..." << endl
+         << endl;
+
 
     Info << "Preparing raw data ..." << endl
          << endl;
@@ -81,7 +92,7 @@ int main() {
 
 
     Info << "Creating TF_OF_Predictor\n" << endl;
-    TF_OF_Predictor pd = TF_OF_Predictor("constant/TF_Predictor_Dict", "model_pb");
+    TF_OF_Predictor pd = TF_OF_Predictor("constant/TF_Predictor_Dict", sub_dict);
 
 
     Info << "Running the models \n" << endl;

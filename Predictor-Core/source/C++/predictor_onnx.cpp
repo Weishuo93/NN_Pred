@@ -430,11 +430,11 @@ void Predictor::print_operations() {
 
 }
 
-void Predictor::regist_node(std::string name, Predictor::NodeType type) {
+void Predictor::regist_node(std::string name, Settings::NodeType type) {
     DEBUG_EXECUTE(std::cerr << "Warning: In Onnx backends, the I/O nodes are auto-registered." << std::endl);
 #ifdef _DEBUG
     std::cout << "Checking whether the register infomation matches:" << std::endl;
-    if (type == Predictor::INPUT_NODE) {
+    if (type == Settings::INPUT_NODE) {
         std::cout << "Node registered name: " << name << ", registered as INPUT." << std::endl;
     } else {
         std::cout << "Node registered name: " << name << ", registered as OUTPUT." << std::endl;
@@ -852,7 +852,7 @@ static void set_tensor_data_col_eigen_sametype(T_data* src, Ort::Value* dst) {
 
 template <typename T>
 bool Predictor::set_node_data(std::string name, T* p_data, int array_size) {
-    return this->set_node_data(name, p_data, array_size, Predictor::RowMajor, Predictor::Eigen);
+    return this->set_node_data(name, p_data, array_size, Settings::RowMajor, Settings::Eigen);
 }
 
 template bool Predictor::set_node_data<float>(std::string name, float* p_data, int array_size);
@@ -865,21 +865,21 @@ template bool Predictor::set_node_data<uint16_t>(std::string name, uint16_t* p_d
 template bool Predictor::set_node_data<uint32_t>(std::string name, uint32_t* p_data, int array_size);
 
 template <typename T>
-bool Predictor::set_node_data(std::string name, T* p_data, int array_size, Predictor::DataLayout layout) {
-    return this->set_node_data(name, p_data, array_size, layout, Predictor::Eigen);
+bool Predictor::set_node_data(std::string name, T* p_data, int array_size, Settings::DataLayout layout) {
+    return this->set_node_data(name, p_data, array_size, layout, Settings::Eigen);
 }
 
-template bool Predictor::set_node_data<float>(std::string name, float* p_data, int array_size, Predictor::DataLayout layout);
-template bool Predictor::set_node_data<double>(std::string name, double* p_data, int array_size, Predictor::DataLayout layout);
-template bool Predictor::set_node_data<int32_t>(std::string name, int32_t* p_data, int array_size, Predictor::DataLayout layout);
-template bool Predictor::set_node_data<int16_t>(std::string name, int16_t* p_data, int array_size, Predictor::DataLayout layout);
-template bool Predictor::set_node_data<int8_t>(std::string name, int8_t* p_data, int array_size, Predictor::DataLayout layout);
-template bool Predictor::set_node_data<uint8_t>(std::string name, uint8_t* p_data, int array_size, Predictor::DataLayout layout);
-template bool Predictor::set_node_data<uint16_t>(std::string name, uint16_t* p_data, int array_size, Predictor::DataLayout layout);
-template bool Predictor::set_node_data<uint32_t>(std::string name, uint32_t* p_data, int array_size, Predictor::DataLayout layout);
+template bool Predictor::set_node_data<float>(std::string name, float* p_data, int array_size, Settings::DataLayout layout);
+template bool Predictor::set_node_data<double>(std::string name, double* p_data, int array_size, Settings::DataLayout layout);
+template bool Predictor::set_node_data<int32_t>(std::string name, int32_t* p_data, int array_size, Settings::DataLayout layout);
+template bool Predictor::set_node_data<int16_t>(std::string name, int16_t* p_data, int array_size, Settings::DataLayout layout);
+template bool Predictor::set_node_data<int8_t>(std::string name, int8_t* p_data, int array_size, Settings::DataLayout layout);
+template bool Predictor::set_node_data<uint8_t>(std::string name, uint8_t* p_data, int array_size, Settings::DataLayout layout);
+template bool Predictor::set_node_data<uint16_t>(std::string name, uint16_t* p_data, int array_size, Settings::DataLayout layout);
+template bool Predictor::set_node_data<uint32_t>(std::string name, uint32_t* p_data, int array_size, Settings::DataLayout layout);
 
 template <typename T>
-bool Predictor::set_node_data(std::string name, T* p_data, int array_size, Predictor::DataLayout layout, Predictor::CopyMethod method) {
+bool Predictor::set_node_data(std::string name, T* p_data, int array_size, Settings::DataLayout layout, Settings::CopyMethod method) {
     
     size_t tensor_index = -1;
     for (size_t i = 0; i < d->input_count; i++) {
@@ -914,12 +914,12 @@ bool Predictor::set_node_data(std::string name, T* p_data, int array_size, Predi
 
     if (deduce_type<T>() == type_information) {
         switch (layout) {
-            case Predictor::RowMajor: {
+            case Settings::RowMajor: {
                 T* buff_in = d->input_tensors[tensor_index].GetTensorMutableData<T>();
                 std::copy_n(p_data, d->input_tensors[tensor_index].GetTensorTypeAndShapeInfo().GetElementCount(), buff_in);
                 return true;
             } break;
-            case Predictor::ColumnMajor: {
+            case Settings::ColumnMajor: {
                 set_tensor_data_col_eigen_sametype<T>(p_data, &(d->input_tensors[tensor_index]));
                 return true;
             } break;
@@ -931,9 +931,9 @@ bool Predictor::set_node_data(std::string name, T* p_data, int array_size, Predi
     }
 
     switch (method) {
-        case Predictor::Eigen: {
+        case Settings::Eigen: {
             switch (layout) {
-                case Predictor::RowMajor: {
+                case Settings::RowMajor: {
                     switch (type_information) {
                         case ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT:
                             set_tensor_data_row_eigen<T, float>(p_data, &(d->input_tensors[tensor_index]));
@@ -967,7 +967,7 @@ bool Predictor::set_node_data(std::string name, T* p_data, int array_size, Predi
                     }
                 } break;
 
-                case Predictor::ColumnMajor: {
+                case Settings::ColumnMajor: {
                     switch (type_information) {
                         case ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT:
                             set_tensor_data_col_eigen<T, float>(p_data, &(d->input_tensors[tensor_index]));
@@ -1008,9 +1008,9 @@ bool Predictor::set_node_data(std::string name, T* p_data, int array_size, Predi
             }
         } break;
 
-        case Predictor::Simple: {
+        case Settings::Simple: {
             switch (layout) {
-                case Predictor::RowMajor: {
+                case Settings::RowMajor: {
                     switch (type_information) {
                         case ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT:
                             set_tensor_data_row_simple<T, float>(p_data, &(d->input_tensors[tensor_index]));
@@ -1044,7 +1044,7 @@ bool Predictor::set_node_data(std::string name, T* p_data, int array_size, Predi
                     }
                 } break;
 
-                case Predictor::ColumnMajor: {
+                case Settings::ColumnMajor: {
                     switch (type_information) {
                         case ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT:
                             set_tensor_data_col_simple<T, float>(p_data, &(d->input_tensors[tensor_index]));
@@ -1094,19 +1094,19 @@ bool Predictor::set_node_data(std::string name, T* p_data, int array_size, Predi
 }
 
 
-template bool Predictor::set_node_data<float>(std::string name, float* p_data, int array_size, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::set_node_data<double>(std::string name, double* p_data, int array_size, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::set_node_data<int32_t>(std::string name, int32_t* p_data, int array_size, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::set_node_data<int16_t>(std::string name, int16_t* p_data, int array_size, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::set_node_data<int8_t>(std::string name, int8_t* p_data, int array_size, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::set_node_data<uint8_t>(std::string name, uint8_t* p_data, int array_size, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::set_node_data<uint16_t>(std::string name, uint16_t* p_data, int array_size, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::set_node_data<uint32_t>(std::string name, uint32_t* p_data, int array_size, Predictor::DataLayout layout, Predictor::CopyMethod method);
+template bool Predictor::set_node_data<float>(std::string name, float* p_data, int array_size, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::set_node_data<double>(std::string name, double* p_data, int array_size, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::set_node_data<int32_t>(std::string name, int32_t* p_data, int array_size, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::set_node_data<int16_t>(std::string name, int16_t* p_data, int array_size, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::set_node_data<int8_t>(std::string name, int8_t* p_data, int array_size, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::set_node_data<uint8_t>(std::string name, uint8_t* p_data, int array_size, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::set_node_data<uint16_t>(std::string name, uint16_t* p_data, int array_size, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::set_node_data<uint32_t>(std::string name, uint32_t* p_data, int array_size, Settings::DataLayout layout, Settings::CopyMethod method);
 //-------------------------------------------------------------------------------------------------
 // std::vector wrapper
 template <typename T>
 bool Predictor::set_node_data(std::string name, std::vector<T>& data) {
-    return this->set_node_data(name, data.data(), data.size(), Predictor::RowMajor, Predictor::Eigen);
+    return this->set_node_data(name, data.data(), data.size(), Settings::RowMajor, Settings::Eigen);
 }
 
 template bool Predictor::set_node_data<float>(std::string name, std::vector<float>& data);
@@ -1120,32 +1120,32 @@ template bool Predictor::set_node_data<uint32_t>(std::string name, std::vector<u
 
 
 template <typename T>
-bool Predictor::set_node_data(std::string name, std::vector<T>& data, Predictor::DataLayout layout) {
-    return this->set_node_data(name, data.data(), data.size(), layout, Predictor::Eigen);
+bool Predictor::set_node_data(std::string name, std::vector<T>& data, Settings::DataLayout layout) {
+    return this->set_node_data(name, data.data(), data.size(), layout, Settings::Eigen);
 }
 
-template bool Predictor::set_node_data<float>(std::string name, std::vector<float>& data, Predictor::DataLayout layout);
-template bool Predictor::set_node_data<double>(std::string name, std::vector<double>& data, Predictor::DataLayout layout);
-template bool Predictor::set_node_data<int32_t>(std::string name, std::vector<int32_t>& data, Predictor::DataLayout layout);
-template bool Predictor::set_node_data<int16_t>(std::string name, std::vector<int16_t>& data, Predictor::DataLayout layout);
-template bool Predictor::set_node_data<int8_t>(std::string name, std::vector<int8_t>& data, Predictor::DataLayout layout);
-template bool Predictor::set_node_data<uint8_t>(std::string name, std::vector<uint8_t>& data, Predictor::DataLayout layout);
-template bool Predictor::set_node_data<uint16_t>(std::string name, std::vector<uint16_t>& data, Predictor::DataLayout layout);
-template bool Predictor::set_node_data<uint32_t>(std::string name, std::vector<uint32_t>& data, Predictor::DataLayout layout);
+template bool Predictor::set_node_data<float>(std::string name, std::vector<float>& data, Settings::DataLayout layout);
+template bool Predictor::set_node_data<double>(std::string name, std::vector<double>& data, Settings::DataLayout layout);
+template bool Predictor::set_node_data<int32_t>(std::string name, std::vector<int32_t>& data, Settings::DataLayout layout);
+template bool Predictor::set_node_data<int16_t>(std::string name, std::vector<int16_t>& data, Settings::DataLayout layout);
+template bool Predictor::set_node_data<int8_t>(std::string name, std::vector<int8_t>& data, Settings::DataLayout layout);
+template bool Predictor::set_node_data<uint8_t>(std::string name, std::vector<uint8_t>& data, Settings::DataLayout layout);
+template bool Predictor::set_node_data<uint16_t>(std::string name, std::vector<uint16_t>& data, Settings::DataLayout layout);
+template bool Predictor::set_node_data<uint32_t>(std::string name, std::vector<uint32_t>& data, Settings::DataLayout layout);
 
 template <typename T>
-bool Predictor::set_node_data(std::string name, std::vector<T>& data, Predictor::DataLayout layout, Predictor::CopyMethod method) {
+bool Predictor::set_node_data(std::string name, std::vector<T>& data, Settings::DataLayout layout, Settings::CopyMethod method) {
     return this->set_node_data(name, data.data(), data.size(), layout, method);
 }
 
-template bool Predictor::set_node_data<float>(std::string name, std::vector<float>& data, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::set_node_data<double>(std::string name, std::vector<double>& data, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::set_node_data<int32_t>(std::string name, std::vector<int32_t>& data, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::set_node_data<int16_t>(std::string name, std::vector<int16_t>& data, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::set_node_data<int8_t>(std::string name, std::vector<int8_t>& data, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::set_node_data<uint8_t>(std::string name, std::vector<uint8_t>& data, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::set_node_data<uint16_t>(std::string name, std::vector<uint16_t>& data, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::set_node_data<uint32_t>(std::string name, std::vector<uint32_t>& data, Predictor::DataLayout layout, Predictor::CopyMethod method);
+template bool Predictor::set_node_data<float>(std::string name, std::vector<float>& data, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::set_node_data<double>(std::string name, std::vector<double>& data, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::set_node_data<int32_t>(std::string name, std::vector<int32_t>& data, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::set_node_data<int16_t>(std::string name, std::vector<int16_t>& data, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::set_node_data<int8_t>(std::string name, std::vector<int8_t>& data, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::set_node_data<uint8_t>(std::string name, std::vector<uint8_t>& data, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::set_node_data<uint16_t>(std::string name, std::vector<uint16_t>& data, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::set_node_data<uint32_t>(std::string name, std::vector<uint32_t>& data, Settings::DataLayout layout, Settings::CopyMethod method);
 
 
 //-------------------------------------------------------------------------------------------------
@@ -1424,7 +1424,7 @@ static void get_tensor_data_col_eigen_sametype(Ort::Value* src, T_data* dst) {
 
 template <typename T>
 bool Predictor::get_node_data(std::string name, T* p_data, int array_size) {
-    return this->get_node_data(name, p_data, array_size, Predictor::RowMajor, Predictor::Eigen);
+    return this->get_node_data(name, p_data, array_size, Settings::RowMajor, Settings::Eigen);
 }
 
 template bool Predictor::get_node_data<float>(std::string name, float* p_data, int array_size);
@@ -1437,23 +1437,23 @@ template bool Predictor::get_node_data<uint16_t>(std::string name, uint16_t* p_d
 template bool Predictor::get_node_data<uint32_t>(std::string name, uint32_t* p_data, int array_size);
 
 template <typename T>
-bool Predictor::get_node_data(std::string name, T* p_data, int array_size, Predictor::DataLayout layout) {
-    return this->get_node_data(name, p_data, array_size, layout, Predictor::Eigen);
+bool Predictor::get_node_data(std::string name, T* p_data, int array_size, Settings::DataLayout layout) {
+    return this->get_node_data(name, p_data, array_size, layout, Settings::Eigen);
 }
 
-template bool Predictor::get_node_data<float>(std::string name, float* p_data, int array_size, Predictor::DataLayout layout);
-template bool Predictor::get_node_data<double>(std::string name, double* p_data, int array_size, Predictor::DataLayout layout);
-template bool Predictor::get_node_data<int32_t>(std::string name, int32_t* p_data, int array_size, Predictor::DataLayout layout);
-template bool Predictor::get_node_data<int16_t>(std::string name, int16_t* p_data, int array_size, Predictor::DataLayout layout);
-template bool Predictor::get_node_data<int8_t>(std::string name, int8_t* p_data, int array_size, Predictor::DataLayout layout);
-template bool Predictor::get_node_data<uint8_t>(std::string name, uint8_t* p_data, int array_size, Predictor::DataLayout layout);
-template bool Predictor::get_node_data<uint16_t>(std::string name, uint16_t* p_data, int array_size, Predictor::DataLayout layout);
-template bool Predictor::get_node_data<uint32_t>(std::string name, uint32_t* p_data, int array_size, Predictor::DataLayout layout);
-// template bool Predictor::get_node_data<uint64_t>(std::string name, std::vector<uint64_t>& data, Predictor::DataLayout layout);
-// template bool Predictor::get_node_data<int64_t>(std::string name, std::vector<int64_t>& data, Predictor::DataLayout layout);
+template bool Predictor::get_node_data<float>(std::string name, float* p_data, int array_size, Settings::DataLayout layout);
+template bool Predictor::get_node_data<double>(std::string name, double* p_data, int array_size, Settings::DataLayout layout);
+template bool Predictor::get_node_data<int32_t>(std::string name, int32_t* p_data, int array_size, Settings::DataLayout layout);
+template bool Predictor::get_node_data<int16_t>(std::string name, int16_t* p_data, int array_size, Settings::DataLayout layout);
+template bool Predictor::get_node_data<int8_t>(std::string name, int8_t* p_data, int array_size, Settings::DataLayout layout);
+template bool Predictor::get_node_data<uint8_t>(std::string name, uint8_t* p_data, int array_size, Settings::DataLayout layout);
+template bool Predictor::get_node_data<uint16_t>(std::string name, uint16_t* p_data, int array_size, Settings::DataLayout layout);
+template bool Predictor::get_node_data<uint32_t>(std::string name, uint32_t* p_data, int array_size, Settings::DataLayout layout);
+// template bool Predictor::get_node_data<uint64_t>(std::string name, std::vector<uint64_t>& data, Settings::DataLayout layout);
+// template bool Predictor::get_node_data<int64_t>(std::string name, std::vector<int64_t>& data, Settings::DataLayout layout);
 
 template <typename T>
-bool Predictor::get_node_data(std::string name, T* p_data, int array_size, Predictor::DataLayout layout, Predictor::CopyMethod method) {
+bool Predictor::get_node_data(std::string name, T* p_data, int array_size, Settings::DataLayout layout, Settings::CopyMethod method) {
     size_t tensor_index = -1;
     for (size_t i = 0; i < d->output_count; i++) {
         if (d->output_nodes[i].name == name) {
@@ -1490,12 +1490,12 @@ bool Predictor::get_node_data(std::string name, T* p_data, int array_size, Predi
 
     if (deduce_type<T>() == type_information) {
         switch (layout) {
-            case Predictor::RowMajor: {
+            case Settings::RowMajor: {
                 T* buff_in = d->output_tensors[tensor_index].GetTensorMutableData<T>();
                 std::copy_n(buff_in, d->output_tensors[tensor_index].GetTensorTypeAndShapeInfo().GetElementCount(), p_data);
                 return true;
             } break;
-            case Predictor::ColumnMajor: {
+            case Settings::ColumnMajor: {
                 get_tensor_data_col_eigen_sametype<T>(&(d->output_tensors[tensor_index]), p_data);
                 return true;
             } break;
@@ -1508,9 +1508,9 @@ bool Predictor::get_node_data(std::string name, T* p_data, int array_size, Predi
     DEBUG_EXECUTE(std::cout << "Different datatype between tensor definition and data source, auto casting enabled." << std::endl);
 
     switch (method) {
-        case Predictor::Eigen: {
+        case Settings::Eigen: {
             switch (layout) {
-                case Predictor::RowMajor: {
+                case Settings::RowMajor: {
                     switch (type_information) {
                         case ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT:
                             get_tensor_data_row_eigen<float, T>(&(d->output_tensors[tensor_index]), p_data);
@@ -1544,7 +1544,7 @@ bool Predictor::get_node_data(std::string name, T* p_data, int array_size, Predi
                     }
                 } break;
 
-                case Predictor::ColumnMajor: {
+                case Settings::ColumnMajor: {
                     switch (type_information) {
                         case ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT:
                             get_tensor_data_col_eigen<float, T>(&(d->output_tensors[tensor_index]), p_data);
@@ -1585,9 +1585,9 @@ bool Predictor::get_node_data(std::string name, T* p_data, int array_size, Predi
             }
         } break;
 
-        case Predictor::Simple: {
+        case Settings::Simple: {
             switch (layout) {
-                case Predictor::RowMajor: {
+                case Settings::RowMajor: {
                     switch (type_information) {
                         case ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT:
                             get_tensor_data_row_simple<float, T>(&(d->output_tensors[tensor_index]), p_data);
@@ -1621,7 +1621,7 @@ bool Predictor::get_node_data(std::string name, T* p_data, int array_size, Predi
                     }
                 } break;
 
-                case Predictor::ColumnMajor: {
+                case Settings::ColumnMajor: {
                     switch (type_information) {
                         case ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT:
                             get_tensor_data_col_simple<float, T>(&(d->output_tensors[tensor_index]), p_data);
@@ -1671,21 +1671,21 @@ bool Predictor::get_node_data(std::string name, T* p_data, int array_size, Predi
 }
 
 // TODO: instantiate template function
-template bool Predictor::get_node_data<float>(std::string name, float* p_data, int array_size, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::get_node_data<double>(std::string name, double* p_data, int array_size, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::get_node_data<int32_t>(std::string name, int32_t* p_data, int array_size, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::get_node_data<int16_t>(std::string name, int16_t* p_data, int array_size, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::get_node_data<int8_t>(std::string name, int8_t* p_data, int array_size, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::get_node_data<uint8_t>(std::string name, uint8_t* p_data, int array_size, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::get_node_data<uint16_t>(std::string name, uint16_t* p_data, int array_size, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::get_node_data<uint32_t>(std::string name, uint32_t* p_data, int array_size, Predictor::DataLayout layout, Predictor::CopyMethod method);
+template bool Predictor::get_node_data<float>(std::string name, float* p_data, int array_size, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::get_node_data<double>(std::string name, double* p_data, int array_size, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::get_node_data<int32_t>(std::string name, int32_t* p_data, int array_size, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::get_node_data<int16_t>(std::string name, int16_t* p_data, int array_size, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::get_node_data<int8_t>(std::string name, int8_t* p_data, int array_size, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::get_node_data<uint8_t>(std::string name, uint8_t* p_data, int array_size, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::get_node_data<uint16_t>(std::string name, uint16_t* p_data, int array_size, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::get_node_data<uint32_t>(std::string name, uint32_t* p_data, int array_size, Settings::DataLayout layout, Settings::CopyMethod method);
 
 //-------------------------------------------------------------------------------------------------
 //Wrapper for std::vector
 
 template <typename T>
 bool Predictor::get_node_data(std::string name, std::vector<T>& data) {
-    return this->get_node_data(name, data.data(), data.size(), Predictor::RowMajor, Predictor::Eigen);
+    return this->get_node_data(name, data.data(), data.size(), Settings::RowMajor, Settings::Eigen);
 }
 
 template bool Predictor::get_node_data<float>(std::string name, std::vector<float>& data);
@@ -1698,34 +1698,34 @@ template bool Predictor::get_node_data<uint16_t>(std::string name, std::vector<u
 template bool Predictor::get_node_data<uint32_t>(std::string name, std::vector<uint32_t>& data);
 
 template <typename T>
-bool Predictor::get_node_data(std::string name, std::vector<T>& data, Predictor::DataLayout layout) {
-    return this->get_node_data(name, data.data(), data.size(), layout, Predictor::Eigen);
+bool Predictor::get_node_data(std::string name, std::vector<T>& data, Settings::DataLayout layout) {
+    return this->get_node_data(name, data.data(), data.size(), layout, Settings::Eigen);
 }
 
-template bool Predictor::get_node_data<float>(std::string name, std::vector<float>& data, Predictor::DataLayout layout);
-template bool Predictor::get_node_data<double>(std::string name, std::vector<double>& data, Predictor::DataLayout layout);
-template bool Predictor::get_node_data<int32_t>(std::string name, std::vector<int32_t>& data, Predictor::DataLayout layout);
-template bool Predictor::get_node_data<int16_t>(std::string name, std::vector<int16_t>& data, Predictor::DataLayout layout);
-template bool Predictor::get_node_data<int8_t>(std::string name, std::vector<int8_t>& data, Predictor::DataLayout layout);
-template bool Predictor::get_node_data<uint8_t>(std::string name, std::vector<uint8_t>& data, Predictor::DataLayout layout);
-template bool Predictor::get_node_data<uint16_t>(std::string name, std::vector<uint16_t>& data, Predictor::DataLayout layout);
-template bool Predictor::get_node_data<uint32_t>(std::string name, std::vector<uint32_t>& data, Predictor::DataLayout layout);
-// template bool Predictor::get_node_data<uint64_t>(std::string name, std::vector<uint64_t>& data, Predictor::DataLayout layout);
-// template bool Predictor::get_node_data<int64_t>(std::string name, std::vector<int64_t>& data, Predictor::DataLayout layout);
+template bool Predictor::get_node_data<float>(std::string name, std::vector<float>& data, Settings::DataLayout layout);
+template bool Predictor::get_node_data<double>(std::string name, std::vector<double>& data, Settings::DataLayout layout);
+template bool Predictor::get_node_data<int32_t>(std::string name, std::vector<int32_t>& data, Settings::DataLayout layout);
+template bool Predictor::get_node_data<int16_t>(std::string name, std::vector<int16_t>& data, Settings::DataLayout layout);
+template bool Predictor::get_node_data<int8_t>(std::string name, std::vector<int8_t>& data, Settings::DataLayout layout);
+template bool Predictor::get_node_data<uint8_t>(std::string name, std::vector<uint8_t>& data, Settings::DataLayout layout);
+template bool Predictor::get_node_data<uint16_t>(std::string name, std::vector<uint16_t>& data, Settings::DataLayout layout);
+template bool Predictor::get_node_data<uint32_t>(std::string name, std::vector<uint32_t>& data, Settings::DataLayout layout);
+// template bool Predictor::get_node_data<uint64_t>(std::string name, std::vector<uint64_t>& data, Settings::DataLayout layout);
+// template bool Predictor::get_node_data<int64_t>(std::string name, std::vector<int64_t>& data, Settings::DataLayout layout);
 
 template <typename T>
-bool Predictor::get_node_data(std::string name, std::vector<T>& data, Predictor::DataLayout layout, Predictor::CopyMethod method) {
+bool Predictor::get_node_data(std::string name, std::vector<T>& data, Settings::DataLayout layout, Settings::CopyMethod method) {
     return this->get_node_data(name, data.data(), data.size(), layout, method);
 }
 // TODO: instantiate template function
-template bool Predictor::get_node_data<float>(std::string name, std::vector<float>& data, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::get_node_data<double>(std::string name, std::vector<double>& data, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::get_node_data<int32_t>(std::string name, std::vector<int32_t>& data, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::get_node_data<int16_t>(std::string name, std::vector<int16_t>& data, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::get_node_data<int8_t>(std::string name, std::vector<int8_t>& data, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::get_node_data<uint8_t>(std::string name, std::vector<uint8_t>& data, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::get_node_data<uint16_t>(std::string name, std::vector<uint16_t>& data, Predictor::DataLayout layout, Predictor::CopyMethod method);
-template bool Predictor::get_node_data<uint32_t>(std::string name, std::vector<uint32_t>& data, Predictor::DataLayout layout, Predictor::CopyMethod method);
+template bool Predictor::get_node_data<float>(std::string name, std::vector<float>& data, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::get_node_data<double>(std::string name, std::vector<double>& data, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::get_node_data<int32_t>(std::string name, std::vector<int32_t>& data, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::get_node_data<int16_t>(std::string name, std::vector<int16_t>& data, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::get_node_data<int8_t>(std::string name, std::vector<int8_t>& data, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::get_node_data<uint8_t>(std::string name, std::vector<uint8_t>& data, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::get_node_data<uint16_t>(std::string name, std::vector<uint16_t>& data, Settings::DataLayout layout, Settings::CopyMethod method);
+template bool Predictor::get_node_data<uint32_t>(std::string name, std::vector<uint32_t>& data, Settings::DataLayout layout, Settings::CopyMethod method);
 
 // --------------------------------------------------------------------------------------------------------------------
 void Predictor::run() {
@@ -1749,86 +1749,7 @@ void Predictor::run() {
 
 }
 
-// NodeInfo PredictorImpl::get_info_from_model(std::string name, bool& is_node_legal) {
-//     NodeInfo info;
-//     std::cout << "Start detecting node info from graph with name: " << name << std::endl;
 
-//     const char* name_char = name.data();
+// For C_Extensions
+#include "c_interface/c_interface.cpp"
 
-//     TF_Operation* oper = TF_GraphOperationByName(this->model.graph, name_char);
-
-//     if (oper == nullptr) {
-//         std::cerr << "Node with name: " << name << " does not exist." << std::endl;
-//         return info;
-//     }
-
-//     std::cout << "Node: {" << TF_OperationName(oper) << "} Info:" << std::endl;
-//     std::cout << "--------------------------------------" << std::endl;
-
-//     if (TF_OperationNumOutputs(oper) <= 0) {
-//         is_node_legal = false;
-//         std::cerr << "Node with name: " << name << " has no output." << std::endl;
-//         return info;
-//     }
-
-//     info.op = {oper, 0};
-
-//     // assert((TF_OperationOutputType(output) > 0) && (TF_OperationOutputType(output) < 25));
-
-//     if (this->DT_TO_STRING.find(TF_OperationOutputType(info.op)) == this->DT_TO_STRING.end()) {
-//         std::cout << "Datatype:             " << " UNKNOWN " << std::endl;
-//     } else {
-//         std::cout << "Datatype:             " << this->DT_TO_STRING[TF_OperationOutputType(info.op)] << std::endl;
-//     }
-
-//     info.type = TF_OperationOutputType(info.op);
-
-//     int num_dim = TF_GraphGetTensorNumDims(this->model.graph, info.op, this->model.status);
-
-//     if (TF_GetCode(this->model.status) != TF_OK) {
-//         std::cerr << TF_Message(this->model.status) << std::endl;
-//         is_node_legal = false;
-//         return info;
-//     }
-
-//     std::vector<int64_t> shape_arr;
-
-//     if (num_dim < 0) {
-//         std::cerr << "Unable to detect num_dim from node: " << TF_OperationName(oper) << std::endl;
-//         is_node_legal = false;
-//         return info;
-//     } else {
-//         shape_arr.resize(num_dim);
-//         TF_GraphGetTensorShape(this->model.graph,
-//                                info.op,
-//                                shape_arr.data(), num_dim,
-//                                this->model.status);
-//         if (TF_GetCode(this->model.status) != TF_OK) {
-//             std::cerr << TF_Message(this->model.status) << std::endl;
-//             is_node_legal = false;
-//             return info;
-//         }
-//         info.shape = shape_arr;
-//     }
-
-
-
-//     std::cout << "Tensor_shape:         ";
-//     print_shape(shape_arr);
-//     std::cout << "--------------------------------------\n" << std::endl;
-
-
-//     is_node_legal = true;
-//     return info;
-// }
-
-// void NoOpDeallocator(void* data, size_t, void*) {}
-
-// std::vector<tensorflow::int64> get_shape_from_tensor(tensorflow::Tensor& tensor) {
-//     std::vector<tensorflow::int64> shape;
-//     int64_t num_dimensions = tensor.shape().dims();
-//     for (int ii_dim = 0; ii_dim < num_dimensions; ii_dim++) {
-//         shape.push_back(tensor.shape().dim_size(ii_dim));
-//     }
-//     return shape;
-// }

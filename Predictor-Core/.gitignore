@@ -1,7 +1,7 @@
 *.mod
 *.o
 outputs
-
+*_new*
 
 third_party/EIGEN_libs
 third_party/TF_libs

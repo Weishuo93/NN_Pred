@@ -6,7 +6,8 @@ OF_TEST := TF_OF_Predictor/test
 OF_SO  := $(FOAM_USER_LIBBIN)/libTF_OF_Predictor.so
 OF_EXE := $(FOAM_USER_APPBIN)/TF_OF_testAplutB
 
-
+DICT_ONNX := model_onnx
+DICT_TF := model_pb
 
 
 # Targets:
@@ -20,7 +21,7 @@ ofso: guard-FOAM_USER_APPBIN guard-FOAM_USER_LIBBIN check-wmake $(OF_SO)
 oftest: ofso $(OF_EXE)
 
 runof: ofso oftest 
-	cd $(OF_TEST) && $(OF_EXE)
+	cd $(OF_TEST) && $(OF_EXE) $(DICT_${NNPRED_BACKEND})
 
 
 clean:

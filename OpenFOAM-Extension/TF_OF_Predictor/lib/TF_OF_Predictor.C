@@ -33,7 +33,7 @@ SourceFiles
 
 #include "TF_OF_Predictor.H"
 
-#include "predictor.h"
+#include "dyn_predictor.h"
 
 
 #include "IFstream.H"
@@ -69,10 +69,10 @@ class TF_OF_Predictor_Impl {
 
 
 
-    Predictor* pd;
+    DynPredictor* pd;
 
-    Predictor::DataLayout layout;
-    Predictor::CopyMethod method;
+    Settings::DataLayout layout;
+    Settings::CopyMethod method;
 
     Foam::fileNameList inputs_names;
     Foam::fileNameList outputs_names;
@@ -90,12 +90,14 @@ TF_OF_Predictor_Impl::TF_OF_Predictor_Impl(std::string Dict_dir, std::string Mod
     Foam::Switch is_pb = static_cast<Foam::Switch>(model_info.lookup("readFromPB"));
 
     if (is_pb) {
+        Foam::Info << "AAAAAAAAAAAA" << Foam::endl;
         Foam::fileName PB_file = static_cast<Foam::fileName>(model_info.lookup("modelDirectory"));
-        this->pd = new Predictor(PB_file);
+        this->pd = new DynPredictor(PB_file);
     } else {
+        Foam::Info << "BBBBBBBBBBBB" << Foam::endl;
         Foam::fileName Saved_Model_Dir =  static_cast<Foam::fileName>(model_info.lookup("modelDirectory"));
         Foam::fileName tags =  static_cast<Foam::fileName>(model_info.lookup("tags"));
-        this->pd = new Predictor(Saved_Model_Dir, tags);
+        this->pd = new DynPredictor(Saved_Model_Dir, tags);
     }
 
     this->inputs_names = Foam::fileNameList(model_info.lookup("inputs"));
@@ -103,31 +105,31 @@ TF_OF_Predictor_Impl::TF_OF_Predictor_Impl(std::string Dict_dir, std::string Mod
 
     for (int i = 0; i < this->inputs_names.size(); i++) {
         Foam::Info << "Registering input node: " << this->inputs_names[i] << Foam::endl;
-        this->pd->regist_node(this->inputs_names[i], Predictor::INPUT_NODE);
+        this->pd->regist_node(this->inputs_names[i], Settings::INPUT_NODE);
     }
 
     for (int i = 0; i < this->outputs_names.size(); i++) {
         Foam::Info << "Registering input node: " << this->outputs_names[i] << Foam::endl;
-        this->pd->regist_node(this->outputs_names[i], Predictor::OUTPUT_NODE);
+        this->pd->regist_node(this->outputs_names[i], Settings::OUTPUT_NODE);
     }
 
     Foam::word layout_string =  static_cast<Foam::word>(model_info.lookup("layout"));
     if (layout_string == "ColMajor") {
-        this->layout = Predictor::ColumnMajor;
+        this->layout = Settings::ColumnMajor;
     } else if (layout_string == "RowMajor") {
-        this->layout = Predictor::RowMajor;
+        this->layout = Settings::RowMajor;
     } else {
-        this->layout = Predictor::ColumnMajor;
+        this->layout = Settings::ColumnMajor;
         Foam::Info << "Failed to recognize data layout, use default ColMajor" << Foam::endl;
     }
 
     Foam::word method_string = static_cast<Foam::word>(model_info.lookup("copyMethod"));
     if (method_string == "Eigen") {
-        this->method = Predictor::Eigen;
+        this->method = Settings::Eigen;
     } else if (method_string == "Safe") {
-        this->method = Predictor::Simple;
+        this->method = Settings::Simple;
     } else {
-        this->method = Predictor::Eigen;
+        this->method = Settings::Eigen;
         Foam::Info << "Failed to recognize copy method, use default Eigen" << Foam::endl;
     }
 }
@@ -660,3 +662,4 @@ void TF_OF_Predictor::predict(Foam::List<Foam::List<Foam::scalarField * > > & mu
         }
     }
 }
+

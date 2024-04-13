@@ -20,7 +20,7 @@ model_pb
 {
     readFromPB                yes;
     modelDirectory            "models/simple_graph_tf2.pb";
-    copyMethod                Safe;           // Eigen for fast
+    copyMethod                Eigen;           // Eigen for fast
     layout                    ColMajor;        // ColMajor or RowMajor
     inputs                    ("input_a" "input_b");       //Node name for inputs, use space to separate multiple inputs: (a b c d)
     outputs                   ("result");        //Node name for outputs
@@ -36,6 +36,17 @@ model_SavedModel
     layout                    ColMajor;         // ColMajor or RowMajor
     inputs                    ("serving_default_input_a" "serving_default_input_b");       //Node name for inputs, use space to separate multiple inputs: (a b c d)
     outputs                   ("PartitionedCall");              //Node name for outputs
+}
+
+
+model_onnx
+{
+    readFromPB                yes;
+    modelDirectory            "models/AplusB.onnx";
+    copyMethod                Eigen;           // Eigen for fast
+    layout                    ColMajor;        // ColMajor or RowMajor
+    inputs                    ("input_a" "input_b");       //Node name for inputs, use space to separate multiple inputs: (a b c d)
+    outputs                   ("result");        //Node name for outputs
 }
 
 // ************************************************************************* //

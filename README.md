@@ -20,8 +20,8 @@ The following features might be useful to you:
 Predictor pd("graph.pb");
 
 // Register the nodes in graph that you want to set input data in or get the output data
-pd.regist_node("your_input_name", Predictor::INPUT_NODE);
-pd.regist_node("your_output_name", Predictor::OUTPUT_NODE);
+pd.regist_node("your_input_name", Settings::INPUT_NODE);
+pd.regist_node("your_output_name", Settings::OUTPUT_NODE);
 
 // If the tensorshape in your nodes is with unknown dimension, e.g., [-1, 3]
 // set the unknown dimension with exact number of examples you want to predict 
@@ -45,6 +45,12 @@ pd.get_node_data("your_output_name", data_out)
 
 ```
 
+A library wrapper is also provided for runtime selection specified by $NNPRED_BACKEND. One can simple create a DynPredictor instance by:
+```c++
+#include "dyn_predictor.h"  // Header 
+DynPredictor pd("graph.pb");  // Load the Graph:
+// Other lines are the same as the minimal example ...
+```
 
 ## How to install
 The first step is to activate this folder by executing the script:
@@ -74,8 +80,6 @@ export NNPRED_BACKEND=ONNX  # ONNX Runtime backend
 export NNPRED_BACKEND=TF    # TensorFlow backend
 ```
 
-
-
 ### Build the Predictor-Core
 
 ```sh
@@ -83,28 +87,50 @@ export NNPRED_BACKEND=TF    # TensorFlow backend
 cd Predictor-Core
 
 # build the core predictor and test program 
-make cxxso    # the core predictor in C++ 
-make cxxtest  # C++ test program without running
-make run      # C++ test program and run 
+make cxxso      # the core predictor in C++ 
+make cxxso_dyn  # predictor for runtime-switch backend  
+make cxxtest    # C++ test program without running
+make run        # C++ test program and run 
 
 # build fortran extension and test program
-make f90so    # fortran API
-make f90test  # fortran test program without running
-make runf     # fortran test program and run
+make f90so      # fortran API
+make f90test    # fortran test program without running
+make runf       # fortran test program and run
 ```
 
-After the compilation, both backends are compiled by default, and the make target: `cxxso` will create a symbolic link pointing to the library specified by the environmental variable `$NNPRED_BACKEND`. If the backend needs to be changed, one can modify `$NNPRED_BACKEND` and execute the make target:
+After the `cxxso` compilation target, both backends are compiled by default in `Predictor-Core/outputs/lib`:
 ```sh
-make alias-predictor # Create the symbolic link to the backend lib
+libPredictor_tf.so     # Static predictor library for tensorflow backend 
+libPredictor_onnx.so   # Static predictor library for onnx backend 
 ```
+A symbolic link pointing to the library is also created, specified by the environmental variable `$NNPRED_BACKEND`. 
+```sh
+libPredictor.so     # point to libPredictor_tf.so or libPredictor_onnx.so due to $NNPRED_BACKEND
+```
+The `cxxso_dyn` target will created a dynamic predictor library, which read different backends during runtime:
+```sh
+libDynPredictor.so     # Instansiate different backend specified by $NNPRED_BACKEND during runtime
+```
+If the backend needs to be changed, one can modify `$NNPRED_BACKEND` and execute the make target:
+```sh
+make alias-predictor # Create the symbolic link to the backend library
+```
+which will link `libPredictor.so` to `libPredictor_tf.so` or `libPredictor_onnx.so` according to `$NNPRED_BACKEND`
 
 you might need to add the compiled libraries (located in `./Predictor-Core/outputs/lib`) in your `$LD_LIBRARY_PATH`. This operation is done by sourcing the `activate.sh` at the beginning of the tutorial.
 
+
+### Extensions for CFD solvers
 The installation of `OpenFOAM-Extension` and `CFL3D-Extension` please refer to the `README.md` in each separate folder.
  
 ### [Build OpenFOAM-Extension](https://github.com/Weishuo93/NN_Pred/tree/master/OpenFOAM-Extension)
 
 ### [Build CFL3D-Extension](https://github.com/Weishuo93/NN_Pred/tree/master/CFL3D-Extension)
+
+For OpenFOAM Users, the `Allwmake` script could automatically compile all the OpenFOAM related binaries:
+```sh
+./Allwmake    # Should build all the OpenFOAM related targets.
+```
 
 ### Locally installed third-party libs
 If you want to use the locally installed libs, please modify the two environment variables set in the `activate.sh` to point at the locally installed path:

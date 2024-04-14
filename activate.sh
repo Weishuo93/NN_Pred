@@ -1,4 +1,5 @@
 #!/bin/bash
+cd "${0%/*}"   # Run from this directory
 
 # Set default backend to TF, can be overridden by user
 export NNPRED_BACKEND=${NNPRED_BACKEND:-TF}

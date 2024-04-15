@@ -1,11 +1,17 @@
 #!/bin/bash
-cd "${0%/*}"   # Run from this directory
+# cd "${0%/*}"   # Run from this directory
+
+
+script_absolute_path=$(readlink -f "${BASH_SOURCE[0]}")
+script_dir=$(dirname "$script_absolute_path")
+
+echo "Deactivating NNPred in directory: ${script_dir}"
 
 unset MY_TF_HOME
 unset MY_EIGEN_HOME
 unset PREDICTOR_HOME
 
-TF_LIB_DIR=${PWD}/Predictor-Core/third_party/TF_libs/lib
+TF_LIB_DIR=${script_dir}/Predictor-Core/third_party/TF_libs/lib
 
 if [[ "${LD_LIBRARY_PATH}" == "${TF_LIB_DIR}" ]]; then 
     LD_LIBRARY_PATH=""
@@ -16,7 +22,7 @@ LD_LIBRARY_PATH=${LD_LIBRARY_PATH/#"${TF_LIB_DIR}:"/} # delete any instance at t
 LD_LIBRARY_PATH=${LD_LIBRARY_PATH/%":${TF_LIB_DIR}"/} # delete any instance in the at the end
 
 
-OUTPUTS_LIB=${PWD}/Predictor-Core/src/outputs/lib
+OUTPUTS_LIB=${script_dir}/Predictor-Core/src/outputs/lib
 
 
 if [[ "${LD_LIBRARY_PATH}" == "${OUTPUTS_LIB}" ]]; then 

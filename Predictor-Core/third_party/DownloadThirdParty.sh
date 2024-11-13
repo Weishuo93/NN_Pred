@@ -3,7 +3,7 @@
 # Define default versions
 EIGEN_VER=3.4.0
 TF_VER=2.6.0
-ONNX_VER=1.13.1
+ONNX_VER=1.12.1
 
 # Function to download and extract third-party libraries
 function download_and_extract {

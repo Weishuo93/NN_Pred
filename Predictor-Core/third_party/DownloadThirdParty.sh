@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Define default versions
-EIGEN_VER=3.4.0
-TF_VER=2.6.0
-ONNX_VER=1.12.1
+EIGEN_VER=3.4.0   # Developed under v3.4.0
+TF_VER=2.8.0      # Developed under v2.6.0, tested for v2.8.0
+ONNX_VER=1.20.1   # Developed under v1.12.1, bug fixed and tested for v1.20.1, should work with v1.12.1-v1.20.1
 
 # Function to download and extract third-party libraries
 function download_and_extract {

@@ -253,7 +253,8 @@ Predictor::Predictor(std::string pbfile, int intra_op_parallelism_threads, int i
         std::strcpy(d->input_names[i], temp_name.get());
         std::cout << "Name: " << d->input_names[i] << "\n";
         Ort::TypeInfo input_info = d->model.session->GetInputTypeInfo(i);
-        Ort::Unowned< Ort::TensorTypeAndShapeInfo > input_type_and_shape_info = input_info.GetTensorTypeAndShapeInfo();
+        // Ort::Unowned< Ort::TensorTypeAndShapeInfo > input_type_and_shape_info = input_info.GetTensorTypeAndShapeInfo();
+        auto input_type_and_shape_info = input_info.GetTensorTypeAndShapeInfo();
         temp_info.type = input_type_and_shape_info.GetElementType();
         std::cout << "Datatype: " << DT_TO_STRING[temp_info.type] << "\n";
         size_t 	dim_count = input_type_and_shape_info.GetDimensionsCount();
@@ -282,7 +283,8 @@ Predictor::Predictor(std::string pbfile, int intra_op_parallelism_threads, int i
         std::strcpy(d->output_names[i], temp_name.get());
         std::cout << "Name: " << d->output_names[i] << "\n";
         Ort::TypeInfo output_info = d->model.session->GetOutputTypeInfo(i);
-        Ort::Unowned< Ort::TensorTypeAndShapeInfo > output_type_and_shape_info = output_info.GetTensorTypeAndShapeInfo();
+        // Ort::Unowned< Ort::TensorTypeAndShapeInfo > output_type_and_shape_info = output_info.GetTensorTypeAndShapeInfo();
+        auto output_type_and_shape_info = output_info.GetTensorTypeAndShapeInfo();
         temp_info.type = output_type_and_shape_info.GetElementType();
         std::cout << "Datatype: " << DT_TO_STRING[temp_info.type] << "\n";
         size_t 	dim_count = output_type_and_shape_info.GetDimensionsCount();
@@ -593,17 +595,19 @@ static void set_tensor_data_col_simple(T_data* src, Ort::Value* dst) {
         set_tensor_data_row_simple<T_data, T_tensor>(src, dst);
         return;
     }
-    int64_t* dst_shape = new int64_t[rank];
-    
-    dst->GetTensorTypeAndShapeInfo().GetDimensions(dst_shape, rank);
-    int64_t* src_shape = new int64_t[rank];
+    // int64_t* dst_shape = new int64_t[rank];
+    // dst->GetTensorTypeAndShapeInfo().GetDimensions(dst_shape, rank);   -->deprecated
+    // int64_t* src_shape = new int64_t[rank];
+
+    std::vector<int64_t> dst_shape = dst->GetTensorTypeAndShapeInfo().GetShape();
+    std::vector<int64_t> src_shape(rank);
     for (size_t i = 0; i < rank; ++i) {
         src_shape[i] = dst_shape[rank - i - 1];
     }
 
-    simple_transpose<T_tensor, T_data>(src, rank, src_shape, buff_tensor);
-    delete[] src_shape;
-    delete[] dst_shape;
+    simple_transpose<T_tensor, T_data>(src, rank, src_shape.data(), buff_tensor);
+    // delete[] src_shape;
+    // delete[] dst_shape;
 }
 
 template <typename T_data, typename T_tensor>
@@ -622,8 +626,10 @@ static void set_tensor_data_col_eigen(T_data* src, Ort::Value* dst) {
     DEBUG_EXECUTE(std::cout << "set_tensor_data_col_eigen" << std::endl);
     size_t rank = dst->GetTensorTypeAndShapeInfo().GetDimensionsCount();
     T_tensor* buff_tensor = dst->GetTensorMutableData<T_tensor>();
-    int64_t* dst_shape = new int64_t[rank];
-    dst->GetTensorTypeAndShapeInfo().GetDimensions(dst_shape, rank);
+    // int64_t* dst_shape = new int64_t[rank];
+    // dst->GetTensorTypeAndShapeInfo().GetDimensions(dst_shape, rank);   -->deprecated
+
+    std::vector<int64_t> dst_shape = dst->GetTensorTypeAndShapeInfo().GetShape();
 
     switch (rank) {
         case 1: {
@@ -729,7 +735,7 @@ static void set_tensor_data_col_eigen(T_data* src, Ort::Value* dst) {
             return;
         } break;
     }
-    delete[] dst_shape;
+    // delete[] dst_shape;
 }
 
 template <typename T_data>
@@ -737,8 +743,10 @@ static void set_tensor_data_col_eigen_sametype(T_data* src, Ort::Value* dst) {
     DEBUG_EXECUTE(std::cout << "set_tensor_data_col_eigen_sametype" << std::endl);
     size_t rank = dst->GetTensorTypeAndShapeInfo().GetDimensionsCount();
     T_data* buff_tensor = dst->GetTensorMutableData<T_data>();
-    int64_t* dst_shape = new int64_t[rank];
-    dst->GetTensorTypeAndShapeInfo().GetDimensions(dst_shape, rank);
+    // int64_t* dst_shape = new int64_t[rank];
+    // dst->GetTensorTypeAndShapeInfo().GetDimensions(dst_shape, rank);  -->deprecated
+
+    std::vector<int64_t> dst_shape = dst->GetTensorTypeAndShapeInfo().GetShape();
 
     switch (rank) {
         case 1: {
@@ -847,7 +855,7 @@ static void set_tensor_data_col_eigen_sametype(T_data* src, Ort::Value* dst) {
             return;
         } break;
     }
-    delete[] dst_shape;
+    // delete[] dst_shape;
 }
 
 template <typename T>
@@ -1171,11 +1179,11 @@ static void get_tensor_data_col_simple(Ort::Value* src, T_data* dst) {
         return;
     }
     // get tensor shape
-    int64_t* src_shape = new int64_t[rank];
-    src->GetTensorTypeAndShapeInfo().GetDimensions(src_shape, rank);
-    simple_transpose<T_data, T_tensor>(buff_tensor, rank, src_shape, dst);
-    delete[] src_shape;
-
+    // int64_t* src_shape = new int64_t[rank];
+    // src->GetTensorTypeAndShapeInfo().GetDimensions(src_shape, rank);  -->deprecated
+    std::vector<int64_t> src_shape = src->GetTensorTypeAndShapeInfo().GetShape();
+    simple_transpose<T_data, T_tensor>(buff_tensor, rank, src_shape.data(), dst);
+    // delete[] src_shape;
 }
 
 
@@ -1195,8 +1203,9 @@ static void get_tensor_data_col_eigen(Ort::Value* src, T_data* dst) {
     DEBUG_EXECUTE(std::cout << "get_tensor_data_col_eigen" << std::endl);
     size_t rank = src->GetTensorTypeAndShapeInfo().GetDimensionsCount();
     T_tensor* buff_tensor = src->GetTensorMutableData<T_tensor>();
-    int64_t* src_shape = new int64_t[rank];
-    src->GetTensorTypeAndShapeInfo().GetDimensions(src_shape, rank);
+    // int64_t* src_shape = new int64_t[rank];
+    // src->GetTensorTypeAndShapeInfo().GetDimensions(src_shape, rank);
+    std::vector<int64_t> src_shape = src->GetTensorTypeAndShapeInfo().GetShape();
 
     switch (rank) {
         case 1: {
@@ -1302,7 +1311,7 @@ static void get_tensor_data_col_eigen(Ort::Value* src, T_data* dst) {
             return;
         } break;
     }
-    delete[] src_shape;
+    // delete[] src_shape;
 }
 
 template <typename T_data>
@@ -1310,8 +1319,9 @@ static void get_tensor_data_col_eigen_sametype(Ort::Value* src, T_data* dst) {
     DEBUG_EXECUTE(std::cout << "get_tensor_data_col_eigen_sametype" << std::endl);
     size_t rank = src->GetTensorTypeAndShapeInfo().GetDimensionsCount();
     T_data* buff_tensor = src->GetTensorMutableData<T_data>();
-    int64_t* src_shape = new int64_t[rank];
-    src->GetTensorTypeAndShapeInfo().GetDimensions(src_shape, rank);
+    // int64_t* src_shape = new int64_t[rank];
+    // src->GetTensorTypeAndShapeInfo().GetDimensions(src_shape, rank);  -->deprecated
+    std::vector<int64_t> src_shape = src->GetTensorTypeAndShapeInfo().GetShape();
 
     switch (rank) {
         case 1: {
@@ -1419,7 +1429,7 @@ static void get_tensor_data_col_eigen_sametype(Ort::Value* src, T_data* dst) {
             return;
         } break;
     }
-    delete[] src_shape;
+    // delete[] src_shape;
 }
 
 template <typename T>
